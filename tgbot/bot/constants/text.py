@@ -6,5 +6,5 @@ HELP_MESSAGE = '''
 '''
 START_MESSAGE = '''
 Привет! Чтобы воспользоваться ботом, нужно подписаться на наш
-telegram канал <a href="https://t.me/mpexperts">.
+<a href="https://t.me/mpexperts">telegram канал</a>.
 '''
