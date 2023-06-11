@@ -31,19 +31,18 @@ build-backend = "poetry.core.masonry.api"
 exclude = ".venv"
 max-complexity = 10
 max-line-length = 79
-extend-ignore = """
-        W503,
-        E203,
-        E701,
-    """
-    per-file-ignores = """
-        __init__.py: F401
-        ./src/*: E402
-        settings.py: E501
-    """
+per-file-ignores = """
+    __init__.py: F401
+    settings.py: E501
+"""
 
 [tool.isort]
-multi_line_output = 3
-line_length = 79
-include_trailing_comma = true
-use_parentheses = true
+default_section = "THIRDPARTY"
+sections = ["STDLIB", "FIRSTPARTY", "THIRDPARTY", "LOCALFOLDER"]
+known_local_folder = ["tgbot", "bot", "botmanager"]
+lines_after_imports = "2"
+skip = ["tests", ".venv", "venv"]
+line_length = "79"
+multi_line_output = "3"
+include_trailing_comma = "true"
+use_parentheses = "true"

@@ -12,15 +12,14 @@ repos:
     - id: isort
       name: isort
       entry: isort
-      files: ^(bot/|core/|src/)
+      files: ^(bot/)
       language: system
       types: [python]
-
 
     - id: flake8
       additional_dependencies: [flake8-pyproject]
       name: flake8
       entry: flake8 --config pyproject.toml
-      files: ^(bot/|core/|src/)
+      files: ^(bot/)
       language: python
       types: [python]
