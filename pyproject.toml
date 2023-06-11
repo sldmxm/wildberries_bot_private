@@ -29,6 +29,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.flake8]
 exclude = ".venv"
+paths = ["./tgbot", "./bot", "./botmanager"]
 max-complexity = 10
 max-line-length = 79
 per-file-ignores = """
