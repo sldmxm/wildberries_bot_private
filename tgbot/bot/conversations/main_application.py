@@ -48,7 +48,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode='HTML'
     )
 
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик выбора действий в кнопках под текстом."""
     query = update.callback_query
     await query.answer()
@@ -69,7 +70,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             reply_markup = InlineKeyboardMarkup(keyboard)
             await query.message.reply_text(
                 SUBSCRIBTION_IS_FALSE,
-                reply_markup=reply_markup, 
+                reply_markup=reply_markup,
                 parse_mode='HTML'
             )
 
