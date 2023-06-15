@@ -12,9 +12,6 @@ from bot.constants.text import HELP_MESSAGE, START_MESSAGE, STOP_MESSAGE
 from bot.core.settings import settings
 
 
-
-TELEGRAM_TOKEN = settings.telegram_token
-
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
@@ -45,7 +42,7 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     """Запуск бота."""
-    application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+    application = ApplicationBuilder().token(settings.telegram_token).build()
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CommandHandler('help', help))
     application.add_handler(CommandHandler('stop', stop))
