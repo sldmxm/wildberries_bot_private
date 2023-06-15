@@ -16,8 +16,8 @@ class TelegramUser(AbstractUser):
 
     username = models.CharField(
         verbose_name=USERNAME_VERBOSE,
-        unique=True,
         max_length=MAX_LENGTH_USERNAME,
+        unique=True,
     )
     first_name = models.CharField(
         verbose_name=USERNAME_VERBOSE,
@@ -25,15 +25,15 @@ class TelegramUser(AbstractUser):
     )
     last_name = models.CharField(
         verbose_name=LAST_NAME_VERBOSE,
+        max_length=MAX_LENGTH_LAST_NAME,
         blank=True,
         null=True,
-        max_length=MAX_LENGTH_LAST_NAME,
     )
     phone_number = models.CharField(
         verbose_name=PHONE_NUMBER_VERBOSE,
+        max_length=MAX_LENGTH_PHONE_NUMBER,
         blank=True,
         null=True,
-        max_length=MAX_LENGTH_PHONE_NUMBER,
     )
 
     class Meta:
