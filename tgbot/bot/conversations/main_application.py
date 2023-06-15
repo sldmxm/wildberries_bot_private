@@ -2,7 +2,9 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import Update
+from telegram import InlineKeyboardButton as Button
+from telegram import InlineKeyboardMarkup as Keyboard 
 from telegram.ext import (
     ApplicationBuilder,
     CallbackQueryHandler,
@@ -18,7 +20,7 @@ from bot.constants.text import (
     SUBSCRIBTION_IS_FALSE,
     SUBSCRIBTION_IS_TRUE
 )
-from bot.utils import check_subscription
+from bot.handlers import button
 
 
 load_dotenv()
@@ -35,44 +37,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка команды start."""
     keyboard = [
                 [
-                    InlineKeyboardButton(
+                    Button(
                         'Я подписался, запустить бота',
-                        callback_data='Проверка подписки'
+                        callback_data='check_subscription'
                     )
                 ]
             ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = Keyboard(keyboard)
     await update.message.reply_text(
         START_MESSAGE,
         reply_markup=reply_markup,
         parse_mode='HTML'
     )
-
-
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработчик выбора действий в кнопках под текстом."""
-    query = update.callback_query
-    await query.answer()
-    if query.data == 'Проверка подписки':
-        if await check_subscription(update, context):
-            await update.effective_chat.send_message(SUBSCRIBTION_IS_TRUE)
-        else:
-            query = update.callback_query
-            await query.answer()
-            keyboard = [
-                [
-                    InlineKeyboardButton(
-                        'Я подписался, запустить бота',
-                        callback_data='Проверка подписки'
-                    )
-                ]
-            ]
-            reply_markup = InlineKeyboardMarkup(keyboard)
-            await query.message.reply_text(
-                SUBSCRIBTION_IS_FALSE,
-                reply_markup=reply_markup,
-                parse_mode='HTML'
-            )
 
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
