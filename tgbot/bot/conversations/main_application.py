@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from telegram import Update
 from telegram import InlineKeyboardButton as Button
-from telegram import InlineKeyboardMarkup as Keyboard 
+from telegram import InlineKeyboardMarkup as Keyboard
 from telegram.ext import (
     ApplicationBuilder,
     CallbackQueryHandler,
@@ -17,8 +17,6 @@ from bot.constants.text import (
     HELP_MESSAGE,
     START_MESSAGE,
     STOP_MESSAGE,
-    SUBSCRIBTION_IS_FALSE,
-    SUBSCRIBTION_IS_TRUE
 )
 from bot.handlers import button
 
