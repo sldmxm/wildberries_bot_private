@@ -15,5 +15,5 @@ class TelegramUserAdmin(admin.ModelAdmin):
         'phone_number',
     )
 
-    search_fields = ('username',)
+    search_fields = ('id', 'username', 'phone_number',)
     list_filter = ('username',)

@@ -38,8 +38,5 @@ class TelegramUser(models.Model):
 
     def __str__(self):
         return (
-            f'{self.username}\n'
-            f'{self.first_name}\n'
-            f'{self.telegram_id}\n'
-            f'{self.phone_number}.'
+            f'Пользователь: {self.username} ID: {self.telegram_id}'
         )
