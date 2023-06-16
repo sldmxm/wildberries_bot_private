@@ -1,7 +1,5 @@
 import logging
-import os
 
-from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -11,11 +9,8 @@ from telegram.ext import (
 )
 
 from bot.constants.text import HELP_MESSAGE, START_MESSAGE, STOP_MESSAGE
+from bot.core.settings import settings
 
-
-load_dotenv()
-
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -47,7 +42,7 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     """Запуск бота."""
-    application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+    application = ApplicationBuilder().token(settings.telegram_token).build()
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CommandHandler('help', help))
     application.add_handler(CommandHandler('stop', stop))
