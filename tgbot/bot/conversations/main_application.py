@@ -12,6 +12,7 @@ from telegram.ext import (
 )
 
 from bot.constants.text import HELP_MESSAGE, START_MESSAGE, STOP_MESSAGE
+from bot.core.settings import settings
 
 
 load_dotenv()
@@ -59,7 +60,7 @@ async def setup_my_commands(application: Application):
 def main():
     """Запуск бота."""
     application = (
-        ApplicationBuilder().token(TELEGRAM_TOKEN).
+        ApplicationBuilder().token(settings.telegram_token).
         post_init(setup_my_commands).build()
     )
     application.add_handler(CommandHandler('start', start))
