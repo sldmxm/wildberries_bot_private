@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import (
+    Application,
     ApplicationBuilder,
     CommandHandler,
     ContextTypes,
@@ -45,9 +46,22 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
+async def setup_my_commands(application: Application):
+    """Меню со списком команд"""
+    bot_commands = [
+        ('start', 'Запуск бота'),
+        ('help', 'Получить инструкцию'),
+        ('stop', 'Остановить бота'),
+    ]
+    await application.bot.set_my_commands(bot_commands)
+
+
 def main():
     """Запуск бота."""
-    application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+    application = (
+        ApplicationBuilder().token(TELEGRAM_TOKEN).
+        post_init(setup_my_commands).build()
+    )
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CommandHandler('help', help))
     application.add_handler(CommandHandler('stop', stop))
