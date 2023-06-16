@@ -1,17 +1,15 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
-
 
 MAX_LENGTH_USERNAME = 32
 MAX_LENGTH_FIRST_NAME = 15
-MAX_LENGTH_LAST_NAME = 20
+MAX_LENGTH_ID = 10
 MAX_LENGTH_PHONE_NUMBER = 12
 USERNAME_VERBOSE = 'Имя пользователя в Telegram'
-LAST_NAME_VERBOSE = 'Фамилия пользователя Telegram'
+ID_VERBOSE = 'Идентификатор пользователя Telegram'
 PHONE_NUMBER_VERBOSE = 'Номер телефона пользователя Telegram'
 
 
-class TelegramUser(AbstractUser):
+class TelegramUser(models.Model):
     """Базовая модель для управления данными пользователей ТГ бота"""
 
     username = models.CharField(
@@ -23,11 +21,9 @@ class TelegramUser(AbstractUser):
         verbose_name=USERNAME_VERBOSE,
         max_length=MAX_LENGTH_FIRST_NAME,
     )
-    last_name = models.CharField(
-        verbose_name=LAST_NAME_VERBOSE,
-        max_length=MAX_LENGTH_LAST_NAME,
-        blank=True,
-        null=True,
+    telegram_id = models.CharField(
+        verbose_name=ID_VERBOSE,
+        max_length=MAX_LENGTH_ID,
     )
     phone_number = models.CharField(
         verbose_name=PHONE_NUMBER_VERBOSE,
@@ -44,6 +40,6 @@ class TelegramUser(AbstractUser):
         return (
             f'{self.username}\n'
             f'{self.first_name}\n'
-            f'{self.last_name}\n'
+            f'{self.telegram_id}\n'
             f'{self.phone_number}.'
         )
