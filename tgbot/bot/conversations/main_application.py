@@ -1,7 +1,5 @@
 import logging
-import os
 
-from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -14,10 +12,6 @@ from telegram.ext import (
 from bot.constants.text import HELP_MESSAGE, START_MESSAGE, STOP_MESSAGE
 from bot.core.settings import settings
 
-
-load_dotenv()
-
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
