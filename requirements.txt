@@ -6,3 +6,4 @@ autopep8==2.0.2
 pre-commit==3.3.2
 add-trailing-comma==2.4.0
 mypy==1.3.0
+aiohttp==3.8.4
