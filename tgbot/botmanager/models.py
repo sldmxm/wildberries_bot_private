@@ -1,4 +1,8 @@
+from django.contrib.auth import get_user_model
 from django.db import models
+
+
+User = get_user_model()
 
 MAX_LENGTH_USERNAME = 32
 MAX_LENGTH_FIRST_NAME = 15
@@ -40,3 +44,47 @@ class TelegramUser(models.Model):
         return (
             f'Пользователь: {self.username} ID: {self.telegram_id}'
         )
+
+
+class Mailing(models.Model):
+    """Модель сообщения рассылки пользователям ТГ бота."""
+
+    CONTENT_TYPES = [
+        ('M', 'Message'),
+        ('F', 'File'),
+        ('L', 'Link'),
+        ('I', 'Image'),
+    ]
+
+    author = models.ForeignKey(
+        User,
+        related_name='mailings',
+        on_delete=models.CASCADE,
+        verbose_name='Автор',)
+
+    content_type = models.CharField(
+        max_length=1,
+        choices=CONTENT_TYPES,
+        verbose_name='Тип сообщения',)
+
+    content = models.TextField(
+        verbose_name='Содержание сообщения',)
+
+    recipients = models.ManyToManyField(
+        TelegramUser,
+        related_name='mailings',
+        verbose_name='Получатели',
+        blank=True,)
+
+    pub_date = models.DateTimeField(
+        'Дата создания',
+        auto_now_add=True,
+    )
+
+    class Meta:
+        ordering = ('-pub_date',)
+        verbose_name = 'Сообщение рассылки'
+        verbose_name_plural = 'Сообщения рассылки'
+
+    def __str__(self):
+        return f'{self.pub_date}: ({self.author}) - {self.content[:15]}'
