@@ -1,14 +1,8 @@
-import os
-
-from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import ContextTypes
 
 from bot.constants.text import MEMBER_STATUSES
-
-load_dotenv()
-
-CHANNEL_USERNAME = os.getenv('CHANNEL_USERNAME')
+from bot.core.settings import settings
 
 
 async def check_subscription(
@@ -21,7 +15,7 @@ async def check_subscription(
     выбранной группы.
     """
     member = await context.bot.get_chat_member(
-        chat_id=CHANNEL_USERNAME,
+        chat_id=settings.channel_username,
         user_id=update.callback_query.from_user.id)
     if member.status in MEMBER_STATUSES:
         return True
