@@ -1,22 +1,14 @@
 import re
-from datetime import date, datetime, time, timedelta
 from parser.jobs import create_job, get_user_jobs, stop_job
 from parser.position_parser import get_position, get_result_text
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 
 from bot.constants.callback import (
-    CALLBACK_ACCEPTANCE_RATE,
-    CALLBACK_CANCEL,
-    CALLBACK_POSITION_PARSER,
-    CALLBACK_RESIDUE_PARSER,
-    CALLBACK_SCHEDULE_PARSER,
     CALLBACK_SCHEDULE_PARSER_PATTERN,
     CALLBACK_UNSUBSCRIBE_PATTERN,
-    CALLBACK_UPDATE,
     CALLBACK_UPDATE_PATTERN,
-    CALLBACK_USER_SUBSCRIPTIONS,
 )
 from bot.constants.text import (
     ACCEPTANCE_RATE_START_MESSAGE,
@@ -31,6 +23,11 @@ from bot.constants.text import (
     SUBSCRIPTIONS_MESSAGE,
     UNSUBSCRIBE_MESSAGE,
 )
+from bot.keyboards import (
+    cancel_keyboard,
+    menu_keyboard,
+    position_parse_keyboard,
+)
 from bot.models import Callback
 
 
@@ -43,33 +40,7 @@ from bot.models import Callback
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка меню"""
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                'Парсер позиций',
-                callback_data=CALLBACK_POSITION_PARSER
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                'Парсер остатков',
-                callback_data=CALLBACK_RESIDUE_PARSER
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                'Отслеживание коэффициента приемки WB',
-                callback_data=CALLBACK_ACCEPTANCE_RATE
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                'Мои подписки на позиции',
-                callback_data=CALLBACK_USER_SUBSCRIPTIONS
-            )
-        ],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = menu_keyboard()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=HELP_MESSAGE,
@@ -92,84 +63,13 @@ async def position_parser_help_message(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """обработка вспомогательного сообщения парсера позиций"""
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                'Отмена',
-                callback_data=CALLBACK_CANCEL
-            ),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = cancel_keyboard()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=PARSING_START_MESSAGE,
         reply_markup=reply_markup
     )
     return POSITION_PARSER_CONVERSATION
-
-
-async def build_position_parse_keyboard(article: int, query: str):
-    """Создание клавиатуры парсера позиций"""
-    callback_update = await Callback.objects.acreate(
-        article=article,
-        query=query
-    )
-    nine_am = time(hour=9)
-    current_date = date.today()
-    start_time = datetime.combine(current_date, nine_am)
-    callback_daily = await Callback.objects.acreate(
-        article=article,
-        query=query,
-        interval=timedelta(days=1),
-        start_time=start_time
-    )
-    callback_hourly = {
-        hours: await Callback.objects.acreate(
-            article=article,
-            query=query,
-            interval=timedelta(hours=hours),
-        ) for hours in [1, 6, 12]
-    }
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                'Обновить',
-                callback_data=CALLBACK_UPDATE.format(
-                    callback_id=callback_update.pk
-                )
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                'Результаты в 9:00. Подписаться',
-                callback_data=CALLBACK_SCHEDULE_PARSER.format(
-                    callback_id=callback_daily.pk
-                )
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                '1 час',
-                callback_data=CALLBACK_SCHEDULE_PARSER.format(
-                    callback_id=callback_hourly[1].pk
-                )
-            ),
-            InlineKeyboardButton(
-                '6 часов',
-                callback_data=CALLBACK_SCHEDULE_PARSER.format(
-                    callback_id=callback_hourly[6].pk
-                )
-            ),
-            InlineKeyboardButton(
-                '12 часос',
-                callback_data=CALLBACK_SCHEDULE_PARSER.format(
-                    callback_id=callback_hourly[12].pk
-                )
-            )
-        ]
-    ]
-    return InlineKeyboardMarkup(keyboard)
 
 
 async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -185,7 +85,7 @@ async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
         query = match.group(2)
         results = await get_position(article, query)
         results_text = await get_result_text(results)
-        reply_markup = await build_position_parse_keyboard(article, query)
+        reply_markup = await position_parse_keyboard(article, query)
         response_text = PARSER_MESSAGE.format(
             article=article,
             query=query,
@@ -264,15 +164,7 @@ async def residue_parser_help_message(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Обработка вспомогательного сообщения парсера остатков"""
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                'Отмена',
-                callback_data=CALLBACK_CANCEL
-            ),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = cancel_keyboard()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=RESIDUE_PARSER_START_MESSAGE,
@@ -295,15 +187,7 @@ async def acceptance_rate_help_message(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Обработка вспомогательного сообщения коэффициента приемки"""
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                'Отмена',
-                callback_data=CALLBACK_CANCEL
-            ),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = cancel_keyboard()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=ACCEPTANCE_RATE_START_MESSAGE,
@@ -352,6 +236,6 @@ async def unsubscribe(
     job_id = int(match.group(1))
     await stop_job(update=update, context=context, job_id=job_id)
     await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=UNSUBSCRIBE_MESSAGE
-        )
+        chat_id=update.effective_chat.id,
+        text=UNSUBSCRIBE_MESSAGE
+    )
