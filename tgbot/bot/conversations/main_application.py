@@ -11,7 +11,7 @@ from telegram.ext import (
 
 from bot.constants.text import HELP_MESSAGE, START_MESSAGE, STOP_MESSAGE
 from bot.core.settings import settings
-
+from bot.utils import write_user
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

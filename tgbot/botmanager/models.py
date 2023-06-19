@@ -25,12 +25,6 @@ class TelegramUser(models.Model):
         verbose_name=ID_VERBOSE,
         max_length=MAX_LENGTH_ID,
     )
-    phone_number = models.CharField(
-        verbose_name=PHONE_NUMBER_VERBOSE,
-        max_length=MAX_LENGTH_PHONE_NUMBER,
-        blank=True,
-        null=True,
-    )
 
     class Meta:
         verbose_name = 'Пользователь Telegram'
