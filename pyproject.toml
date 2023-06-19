@@ -2,7 +2,7 @@
 name = "wildberries-bot-team-1"
 version = "0.1.0"
 description = ""
-authors = ["т"]
+authors = ["Сергей Шубин", "Сергей Парфенов", "Андрей Куликов", "Анна Горбунова", "Артемий Березин", "Кирилл Молчанов", "Яна Денисова"]
 readme = "README.md"
 packages = [{include = "wildberries_bot_team_1"}]
 
@@ -11,6 +11,7 @@ python = "^3.11"
 django = "^4.2.2"
 python-telegram-bot = "^20.3"
 flake8-pyproject = "^1.2.3"
+pydantic = "^1.10.9"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^6.0.0"

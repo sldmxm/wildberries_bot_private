@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     debug: bool = False
     channel_username: str
 
+
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'
