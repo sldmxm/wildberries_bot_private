@@ -4,6 +4,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class User(AbstractUser):
+    """Базовая модель для управления данными пользователей админки"""
     USER = 'user'
     ADMIN = 'admin'
     USER_ROLES = (
@@ -63,8 +64,8 @@ class User(AbstractUser):
         )
 
     class Meta:
-        verbose_name = 'Пользователь'
-        verbose_name_plural = 'Пользователи'
+        verbose_name = 'Администратор'
+        verbose_name_plural = 'Администраторы'
         ordering = ['id']
 
     def __str__(self):

@@ -4,6 +4,7 @@ from .models import User
 
 
 class UserAdmin(admin.ModelAdmin):
+    """Регистрация модели в админке"""
     list_display = (
         'pk', 'role', 'username', 'email',
         'first_name', 'last_name',
