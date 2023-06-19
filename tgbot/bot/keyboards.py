@@ -122,7 +122,7 @@ async def position_parse_keyboard(article: int, query: str):
                 )
             ),
             InlineKeyboardButton(
-                '12 часос',
+                '12 часов',
                 callback_data=CALLBACK_SCHEDULE_PARSER.format(
                     callback_id=callback_hourly[12].pk
                 )
