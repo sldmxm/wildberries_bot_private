@@ -15,7 +15,7 @@ class Job(models.Model):
 
 class Destination(models.Model):
     city = models.CharField(max_length=50)
-    index = models.PositiveIntegerField()
+    index = models.IntegerField()
 
 
 class ProductPosition(models.Model):
@@ -26,11 +26,11 @@ class ProductPosition(models.Model):
     )
     datetime = models.DateTimeField(default=datetime.now)
     destination = models.ForeignKey(Destination, on_delete=models.CASCADE)
-    page = models.IntegerField(validators=(
-        MinValueValidator(1),
-        MaxValueValidator(60)
-    ))
+    # page = models.IntegerField(validators=(
+    #     MinValueValidator(1),
+    #     MaxValueValidator(60)
+    # ), null=True)
     position = models.IntegerField(validators=(
         MinValueValidator(1),
         MaxValueValidator(100)
-    ))
+    ), null=True)

@@ -66,14 +66,14 @@ async def schedule_parse(context: CallbackContext) -> None:
             destination=destination
         ).alast()
         if prev_result and destination.index in results:
-            results[destination.index]['prev_page'] = prev_result.page
             results[destination.index]['prev_position'] = prev_result.position
         result = results.get(destination.index, {})
-        page = result.get('page', None)
+        page = result.get('page', 1)
         position = result.get('position', None)
+        if position is not None:
+            position += (page-1) * 100
         await ProductPosition.objects.acreate(
             job=context.job.data,
-            page=page,
             position=position,
             destination=destination
         )

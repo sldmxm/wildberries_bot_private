@@ -94,42 +94,31 @@ async def get_result_text(results: dict) -> str:
     result_text = ''
     async for destination in Destination.objects.all():
         result = results.get(destination.index, {})
-        page = result.get('page', None)
+        page = result.get('page', 1)
         position = result.get('position', None)
-        prev_page = result.get('prev_page', None)
+        position += (page-1)*100
         prev_position = result.get('prev_position', None)
-        if page is None or position is None:
+        if position is None:
             result_text += PRODUCT_POSITION_NOT_FOUND_MESSAGE.format(
                 city=destination.city
             )
-        elif prev_page is not None and prev_position is not None:
-            if page > prev_page:
-                page_arrow = '↑'
-            elif page == prev_page:
-                page_arrow = '●'
-            else:
-                page_arrow = '↓'
+        elif prev_position is not None:
             if position > prev_position:
-                position_arrow = '↑'
+                position_arrow = ' ⬆'
             elif position == prev_position:
-                position_arrow = '●'
+                position_arrow = ' ︎▬'
             else:
-                position_arrow = '↓'
+                position_arrow = ' ⬇'
             result_text += PRODUCT_POSITION_SCHEDULE_MESSAGE.format(
                 city=destination.city,
-                page=page,
                 position=position,
-                prev_page=prev_page,
                 prev_position=prev_position,
                 position_difference=abs(prev_position - position),
-                page_difference=abs(prev_page - page),
-                page_arrow=page_arrow,
                 position_arrow=position_arrow
             )
         else:
             result_text += PRODUCT_POSITION_MESSAGE.format(
                 city=destination.city,
-                page=page,
                 position=position
             )
     return result_text
