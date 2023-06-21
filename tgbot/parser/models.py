@@ -15,7 +15,7 @@ class Job(models.Model):
 
 class Destination(models.Model):
     city = models.CharField(max_length=50)
-    index = models.PositiveIntegerField()
+    index = models.IntegerField()
 
 
 class ProductPosition(models.Model):
@@ -34,3 +34,8 @@ class ProductPosition(models.Model):
         MinValueValidator(1),
         MaxValueValidator(100)
     ))
+
+
+class Storehouse(models.Model):
+    name = models.CharField(max_length=50)
+    index = models.PositiveIntegerField()
