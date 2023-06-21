@@ -47,7 +47,7 @@ ROOT_URLCONF = 'tgbot.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'botmanager/templates/')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -13,6 +13,7 @@ class TelegramUserAdmin(admin.ModelAdmin):
         'first_name',
         'telegram_id',
         'phone_number',
+        'created_at',
     )
 
     search_fields = ('id', 'username', 'phone_number',)

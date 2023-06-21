@@ -1,0 +1,23 @@
+{% extends 'admin/base_site.html' %}
+
+{% block title %}
+User Statistics
+{% endblock %}
+
+{% block content %}
+    <h1>User Statistics</h1>
+
+    <table>
+        <tr>
+            <th>Количество пользователей</th>
+            <th>Дата</th>
+        </tr>
+        {% for row in users_count %}
+        <tr>
+            <td>{{ row.total }}</td>
+            <td>{{ row.created_date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
+
