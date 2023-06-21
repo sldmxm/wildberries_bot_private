@@ -66,6 +66,7 @@ async def async_execute(
         article: int,
         destinations: list[int]
 ) -> dict:
+    """Получение словаря с позицией товара в пункте выдачи заказа"""
     result = {destination: {} for destination in destinations}
     async with aiohttp.ClientSession() as session:
         tasks = []
@@ -91,40 +92,43 @@ async def async_execute(
 
 
 async def get_result_text(results: dict) -> str:
+    """создание текстового сообщения с положением товаров"""
     result_text = ''
     async for destination in Destination.objects.all():
         result = results.get(destination.index, {})
-        page = result.get('page', 1)
+        page = result.get('page', None)
         position = result.get('position', None)
-        position += (page-1)*100
         prev_position = result.get('prev_position', None)
-        if position is None:
+        if position is None or page is None:
             result_text += PRODUCT_POSITION_NOT_FOUND_MESSAGE.format(
                 city=destination.city
             )
-        elif prev_position is not None:
-            if position > prev_position:
+            continue
+        total_position = (page - 1) * 100 + position
+        if prev_position is None:
+            result_text += PRODUCT_POSITION_MESSAGE.format(
+                city=destination.city,
+                position=total_position
+            )
+        else:
+            if total_position > prev_position:
                 position_arrow = ' ⬆'
-            elif position == prev_position:
+            elif total_position == prev_position:
                 position_arrow = ' ︎▬'
             else:
                 position_arrow = ' ⬇'
             result_text += PRODUCT_POSITION_SCHEDULE_MESSAGE.format(
                 city=destination.city,
-                position=position,
+                position=total_position,
                 prev_position=prev_position,
-                position_difference=abs(prev_position - position),
+                position_difference=abs(prev_position - total_position),
                 position_arrow=position_arrow
-            )
-        else:
-            result_text += PRODUCT_POSITION_MESSAGE.format(
-                city=destination.city,
-                position=position
             )
     return result_text
 
 
 async def get_position(product_id: int, query: str) -> dict:
+    """Получение словаря с позицией товара по всем пунктам выдачи заказа"""
     query = '%20'.join(query.split(' '))
     destinations = []
     async for destination in Destination.objects.all():

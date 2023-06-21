@@ -26,11 +26,17 @@ class ProductPosition(models.Model):
     )
     datetime = models.DateTimeField(default=datetime.now)
     destination = models.ForeignKey(Destination, on_delete=models.CASCADE)
-    # page = models.IntegerField(validators=(
-    #     MinValueValidator(1),
-    #     MaxValueValidator(60)
-    # ), null=True)
+    page = models.IntegerField(validators=(
+        MinValueValidator(1),
+        MaxValueValidator(60)
+    ), null=True)
     position = models.IntegerField(validators=(
         MinValueValidator(1),
         MaxValueValidator(100)
     ), null=True)
+
+    @property
+    def total_position(self):
+        if self.position is not None and self.page is not None:
+            return (self.page - 1) * 100 + self.position
+        return None
