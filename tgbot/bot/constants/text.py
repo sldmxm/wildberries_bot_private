@@ -18,6 +18,7 @@ PARSING_START_MESSAGE = (
 PARSING_WAIT_MESSAGE = '''
 Запрос создан! В ближайшие время вам будет отправлен результат.
 '''
+MEMBER_STATUSES = ('administrator', 'member', 'creator',)
 PARSER_MESSAGE = '''
 Результат:
 
