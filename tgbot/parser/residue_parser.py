@@ -41,7 +41,8 @@ async def get_residue(article):
                 try:
                     wh = stock.get('wh')
                     storehouse_name = storehouses_names.get(wh)
-                    residue_in_storehouses[storehouse_name] += count
+                    if storehouse_name is not None:
+                        residue_in_storehouses[storehouse_name] += count
                 except AttributeError:
                     pass
                 residual_sizes[size_name] += count
