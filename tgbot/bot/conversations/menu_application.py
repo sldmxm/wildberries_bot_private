@@ -29,7 +29,7 @@ from bot.keyboards import (
     position_parse_keyboard,
 )
 from bot.models import Callback
-from bot.utils import check_subscription
+from bot.utils import check_subscription, write_user
 
 
 (
@@ -49,6 +49,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text=HELP_MESSAGE,
             reply_markup=reply_markup
         )
+        await write_user(update)
     else:
         await query.answer('Вы не подписались на канал.')
 

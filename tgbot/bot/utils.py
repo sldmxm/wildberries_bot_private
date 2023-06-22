@@ -1,9 +1,9 @@
 from telegram import Update
-from botmanager.models import TelegramUser
 from telegram.ext import ContextTypes
 
 from bot.constants.text import MEMBER_STATUSES
 from bot.core.settings import settings
+from botmanager.models import TelegramUser
 
 
 async def write_user(update: Update):
