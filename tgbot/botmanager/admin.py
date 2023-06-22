@@ -18,3 +18,7 @@ class TelegramUserAdmin(admin.ModelAdmin):
 
     search_fields = ('id', 'username', 'phone_number',)
     list_filter = ('username',)
+
+
+admin.site.site_title = 'Административная панель бота'
+admin.site.site_header = 'Административная панель бота'

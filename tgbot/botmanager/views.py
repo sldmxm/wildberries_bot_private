@@ -12,6 +12,11 @@ def user_statistics(request):
     users_count = TelegramUser.objects.annotate(created_date=TruncDate('created_at')).values(
         'created_date').annotate(total=Count('id')).order_by('created_date')
 
+    cumulative_total = 0
+    for entry in users_count:
+        cumulative_total += entry['total']
+        entry['cumulative_total'] = cumulative_total
+
     context: dict = {
         'users_count': users_count,
     }

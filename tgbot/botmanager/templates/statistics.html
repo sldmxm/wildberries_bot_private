@@ -14,8 +14,9 @@ User Statistics
         </tr>
         {% for row in users_count %}
         <tr>
-            <td>{{ row.total }}</td>
             <td>{{ row.created_date }}</td>
+            <td>{{ row.total }}</td>
+            <td>{{ row.cumulative_total }}</td>
         </tr>
         {% endfor %}
     </table>
