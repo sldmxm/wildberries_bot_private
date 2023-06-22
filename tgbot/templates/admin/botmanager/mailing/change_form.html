@@ -1,0 +1,11 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block submit_buttons_bottom %}
+{% if object_id != None %}
+    <input value="Добавить всех в рассылку" type="button" onclick="location.href='{% url 'admin:recipients_view' object_id=object_id %}'" />
+    <input value="Отправить сообщение в рассылку" type="button" onclick="location.href='{% url 'admin:message_view' object_id=object_id %}'" />
+{% endif %}
+{{ block.super }}
+
+{% endblock %}

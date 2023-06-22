@@ -49,26 +49,28 @@ class TelegramUser(models.Model):
 class Mailing(models.Model):
     """Модель сообщения рассылки пользователям ТГ бота."""
 
-    CONTENT_TYPES = [
-        ('M', 'Message'),
-        ('F', 'File'),
-        ('L', 'Link'),
-        ('I', 'Image'),
-    ]
-
     author = models.ForeignKey(
         User,
         related_name='mailings',
         on_delete=models.CASCADE,
         verbose_name='Автор',)
 
-    content_type = models.CharField(
-        max_length=1,
-        choices=CONTENT_TYPES,
-        verbose_name='Тип сообщения',)
-
     content = models.TextField(
         verbose_name='Содержание сообщения',)
+
+    link = models.URLField(
+        verbose_name='Прикрепленная ссылка',
+        blank=True,)
+
+    image = models.ImageField(
+        verbose_name='Прикрепленное изображение',
+        upload_to='tgbot/botmanager/images/',
+        blank=True,)
+
+    file_attache = models.FileField(
+        verbose_name='Прикрепленный файл',
+        upload_to='tgbot/botmanager/files/',
+        blank=True,)
 
     recipients = models.ManyToManyField(
         TelegramUser,
@@ -78,8 +80,7 @@ class Mailing(models.Model):
 
     pub_date = models.DateTimeField(
         'Дата создания',
-        auto_now_add=True,
-    )
+        auto_now_add=True,)
 
     class Meta:
         ordering = ('-pub_date',)

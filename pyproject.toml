@@ -12,6 +12,8 @@ django = "^4.2.2"
 python-telegram-bot = "^20.3"
 flake8-pyproject = "^1.2.3"
 pydantic = "^1.10.9"
+pillow = "^9.5.0"
+requests = "^2.31.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^6.0.0"
