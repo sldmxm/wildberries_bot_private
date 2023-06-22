@@ -12,7 +12,7 @@ from bot.constants.text import (
     PRODUCT_POSITION_NOT_FOUND_MESSAGE,
     PRODUCT_POSITION_SCHEDULE_MESSAGE,
 )
-
+import json
 
 loop = asyncio.get_event_loop()
 
@@ -22,6 +22,8 @@ async def get_total_positions(query: str, destination: int) -> int:
     link = TOTAL_PRODUCTS_LINK.format(query=query, destination=destination)
     async with aiohttp.ClientSession() as session:
         response = await session.get(link)
+        if response.status != HTTPStatus.OK:
+            return 60*100
         response_json = await response.json(content_type=response.content_type)
         response_data = response_json.get('data', {})
         return response_data.get('total', 0)
