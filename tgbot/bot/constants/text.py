@@ -30,12 +30,23 @@ PRODUCT_POSITION_SCHEDULE_MESSAGE = (
     'Рост/падение {position_difference}{position_arrow}\n'
 )
 PRODUCT_POSITION_NOT_FOUND_MESSAGE = '{city} - нет на первых 60 страниц\n'
+POSITION_PARSER_PATTERN = r'^(\d+)\s+(.+)$'
 RESIDUE_PARSER_START_MESSAGE = '''
 Отправьте артикул для вывода остатков:
 
 Например:
 36704403
 '''
+RESIDUE_PARSER_MESSAGE = '''
+Результат:
+Остатки по складам
+{residue_in_storehouses}
+
+Остатки по размерам
+{residual_sizes}
+'''
+RESIDUE_PARSER_COUNT = '{name}: {count} шт.'
+RESIDUE_PARSER_PATTERN = r'^(\d+)$'
 ACCEPTANCE_RATE_START_MESSAGE = '''
 Выберите склад:
 
@@ -50,3 +61,4 @@ SUBSCRIPTIONS_MESSAGE = '''
 SUBSCRIBE_MESSAGE = 'Вы подписались'
 UNSUBSCRIBE_MESSAGE = 'Вы отписались'
 NO_SUBSCRIPTIONS_MESSAGE = 'У вас нет подписок'
+ERROR_MESSAGE = 'Извините, у меня не получилось обработать запрос.'

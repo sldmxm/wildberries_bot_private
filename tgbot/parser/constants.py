@@ -11,3 +11,8 @@ PAGE_PARSING_LINK = (
         'query={query}&'
         'resultset=catalog'
 )
+RESIDUE_PARSING_LINK = (
+        'https://card.wb.ru/cards/detail?'
+        'dest=-445276&'
+        'nm={article}'
+)

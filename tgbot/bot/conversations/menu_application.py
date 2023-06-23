@@ -1,6 +1,7 @@
 import re
 from parser.jobs import create_job, get_user_jobs, stop_job
 from parser.position_parser import get_position, get_result_text
+from parser.residue_parser import get_residue
 
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
@@ -13,11 +14,16 @@ from bot.constants.callback import (
 from bot.constants.text import (
     ACCEPTANCE_RATE_START_MESSAGE,
     CANCEL_MESSAGE,
+    ERROR_MESSAGE,
     HELP_MESSAGE,
     NO_SUBSCRIPTIONS_MESSAGE,
     PARSER_MESSAGE,
     PARSING_START_MESSAGE,
     PARSING_WAIT_MESSAGE,
+    POSITION_PARSER_PATTERN,
+    RESIDUE_PARSER_COUNT,
+    RESIDUE_PARSER_MESSAGE,
+    RESIDUE_PARSER_PATTERN,
     RESIDUE_PARSER_START_MESSAGE,
     SUBSCRIBE_MESSAGE,
     SUBSCRIPTIONS_MESSAGE,
@@ -79,7 +85,7 @@ async def position_parser_help_message(
 
 async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера позиций"""
-    match = re.match(r'^(\d+)\s+(.+)$', update.message.text)
+    match = re.match(POSITION_PARSER_PATTERN, update.message.text)
     response_text = "Invalid request"
     if match:
         await context.bot.send_message(
@@ -180,9 +186,37 @@ async def residue_parser_help_message(
 
 async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера остатков"""
-    await context.bot.answer_callback_query(
-        update.callback_query.id,
-        'В разработке'
+    match = re.match(RESIDUE_PARSER_PATTERN, update.message.text)
+    article = int(match.group(1))
+    parser_data = await get_residue(article)
+    if not parser_data:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=ERROR_MESSAGE
+        )
+        return RESIDUE_PARSER_CONVERSATION
+    residue_in_storehouses, residual_sizes = parser_data
+    residue_in_storehouses_text = '\n'.join(
+        [
+            RESIDUE_PARSER_COUNT.format(name=city, count=count)
+            for city, count in sorted(
+                residue_in_storehouses.items(), key=lambda item: -item[1]
+            )
+        ]
+    )
+    residual_sizes_text = '\n'.join(
+        [
+            RESIDUE_PARSER_COUNT.format(name=size, count=count)
+            for size, count in sorted(residual_sizes.items())
+        ]
+    )
+    response_text = RESIDUE_PARSER_MESSAGE.format(
+        residue_in_storehouses=residue_in_storehouses_text,
+        residual_sizes=residual_sizes_text
+    )
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=response_text
     )
     return RESIDUE_PARSER_CONVERSATION
 

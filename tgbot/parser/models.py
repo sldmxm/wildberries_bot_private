@@ -40,3 +40,9 @@ class ProductPosition(models.Model):
         if self.position is not None and self.page is not None:
             return (self.page - 1) * 100 + self.position
         return None
+
+
+class Storehouse(models.Model):
+    name = models.CharField(max_length=50)
+    index = models.PositiveIntegerField()
+    
