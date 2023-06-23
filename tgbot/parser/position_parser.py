@@ -12,7 +12,7 @@ from bot.constants.text import (
     PRODUCT_POSITION_NOT_FOUND_MESSAGE,
     PRODUCT_POSITION_SCHEDULE_MESSAGE,
 )
-
+import json
 
 loop = asyncio.get_event_loop()
 
@@ -22,6 +22,8 @@ async def get_total_positions(query: str, destination: int) -> int:
     link = TOTAL_PRODUCTS_LINK.format(query=query, destination=destination)
     async with aiohttp.ClientSession() as session:
         response = await session.get(link)
+        if response.status != HTTPStatus.OK:
+            return 60*100
         response_json = await response.json(content_type=response.content_type)
         response_data = response_json.get('data', {})
         return response_data.get('total', 0)
@@ -66,6 +68,7 @@ async def async_execute(
         article: int,
         destinations: list[int]
 ) -> dict:
+    """Получение словаря с позицией товара в пункте выдачи заказа"""
     result = {destination: {} for destination in destinations}
     async with aiohttp.ClientSession() as session:
         tasks = []
@@ -91,51 +94,43 @@ async def async_execute(
 
 
 async def get_result_text(results: dict) -> str:
+    """создание текстового сообщения с положением товаров"""
     result_text = ''
     async for destination in Destination.objects.all():
         result = results.get(destination.index, {})
         page = result.get('page', None)
         position = result.get('position', None)
-        prev_page = result.get('prev_page', None)
         prev_position = result.get('prev_position', None)
-        if page is None or position is None:
+        if position is None or page is None:
             result_text += PRODUCT_POSITION_NOT_FOUND_MESSAGE.format(
                 city=destination.city
             )
-        elif prev_page is not None and prev_position is not None:
-            if page > prev_page:
-                page_arrow = '↑'
-            elif page == prev_page:
-                page_arrow = '●'
-            else:
-                page_arrow = '↓'
-            if position > prev_position:
-                position_arrow = '↑'
-            elif position == prev_position:
-                position_arrow = '●'
-            else:
-                position_arrow = '↓'
-            result_text += PRODUCT_POSITION_SCHEDULE_MESSAGE.format(
-                city=destination.city,
-                page=page,
-                position=position,
-                prev_page=prev_page,
-                prev_position=prev_position,
-                position_difference=abs(prev_position - position),
-                page_difference=abs(prev_page - page),
-                page_arrow=page_arrow,
-                position_arrow=position_arrow
-            )
-        else:
+            continue
+        total_position = (page - 1) * 100 + position
+        if prev_position is None:
             result_text += PRODUCT_POSITION_MESSAGE.format(
                 city=destination.city,
-                page=page,
-                position=position
+                position=total_position
+            )
+        else:
+            if total_position > prev_position:
+                position_arrow = ' ⬆'
+            elif total_position == prev_position:
+                position_arrow = ' ︎▬'
+            else:
+                position_arrow = ' ⬇'
+            result_text += PRODUCT_POSITION_SCHEDULE_MESSAGE.format(
+                city=destination.city,
+                position=total_position,
+                prev_position=prev_position,
+                position_difference=abs(prev_position - total_position),
+                position_arrow=position_arrow
             )
     return result_text
 
 
 async def get_position(product_id: int, query: str) -> dict:
+    """Получение словаря с позицией товара по всем пунктам выдачи заказа"""
     query = '%20'.join(query.split(' '))
     destinations = []
     async for destination in Destination.objects.all():
