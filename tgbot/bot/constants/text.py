@@ -18,19 +18,16 @@ PARSING_START_MESSAGE = (
 PARSING_WAIT_MESSAGE = '''
 Запрос создан! В ближайшие время вам будет отправлен результат.
 '''
+MEMBER_STATUSES = ('administrator', 'member', 'creator',)
 PARSER_MESSAGE = '''
-Результат:
-
 Артикул: {article}
 Запрос: {query}
-
 {result}
 '''
-PRODUCT_POSITION_MESSAGE = '{city} - Место: {position} (стр. {page})\n'
+PRODUCT_POSITION_MESSAGE = '{city} - Позиция: {position}\n'
 PRODUCT_POSITION_SCHEDULE_MESSAGE = (
-    '{city} - Место: {position}/{prev_position} '
-    '({position_arrow} {position_difference}) (стр. {page}/{prev_page} '
-    '({page_arrow} {page_difference}))'
+    '{city} - Позиция: {position}\n'
+    'Рост/падение {position_difference}{position_arrow}\n'
 )
 PRODUCT_POSITION_NOT_FOUND_MESSAGE = '{city} - нет на первых 60 страниц\n'
 POSITION_PARSER_PATTERN = r'^(\d+)\s+(.+)$'

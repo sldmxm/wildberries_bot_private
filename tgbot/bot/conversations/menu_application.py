@@ -35,6 +35,7 @@ from bot.keyboards import (
     position_parse_keyboard,
 )
 from bot.models import Callback
+from bot.utils import check_subscription
 
 
 (
@@ -46,12 +47,16 @@ from bot.models import Callback
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка меню"""
-    reply_markup = menu_keyboard()
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=HELP_MESSAGE,
-        reply_markup=reply_markup
-    )
+    query = update.callback_query
+    if await check_subscription(update, context):
+        reply_markup = menu_keyboard()
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=HELP_MESSAGE,
+            reply_markup=reply_markup
+        )
+    else:
+        await query.answer('Вы не подписались на канал.')
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):

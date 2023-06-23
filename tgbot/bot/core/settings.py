@@ -4,6 +4,7 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     telegram_token: str
     debug: bool = False
+    channel_username: str
 
     class Config:
         env_file = '.env'

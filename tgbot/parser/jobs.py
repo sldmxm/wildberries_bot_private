@@ -57,6 +57,7 @@ async def create_job(
 
 
 async def schedule_parse(context: CallbackContext) -> None:
+    """Регулярный парсинг по подписке"""
     article = context.job.data.article
     query = context.job.data.query
     results = await get_position(article, query)
@@ -66,8 +67,9 @@ async def schedule_parse(context: CallbackContext) -> None:
             destination=destination
         ).alast()
         if prev_result and destination.index in results:
-            results[destination.index]['prev_page'] = prev_result.page
-            results[destination.index]['prev_position'] = prev_result.position
+            results[destination.index][
+                'prev_position'
+            ] = prev_result.total_position
         result = results.get(destination.index, {})
         page = result.get('page', None)
         position = result.get('position', None)
