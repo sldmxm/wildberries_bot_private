@@ -13,6 +13,7 @@ from bot.constants.text import (
     PRODUCT_POSITION_SCHEDULE_MESSAGE,
 )
 import json
+from .clientsession import ClientSession
 
 loop = asyncio.get_event_loop()
 
@@ -20,22 +21,21 @@ loop = asyncio.get_event_loop()
 async def get_total_positions(query: str, destination: int) -> int:
     """получение общего количества товаров по запросу"""
     link = TOTAL_PRODUCTS_LINK.format(query=query, destination=destination)
-    async with aiohttp.ClientSession() as session:
+    async with ClientSession() as session:
         response = await session.get(link)
         if response.status != HTTPStatus.OK:
-            return 60*100
+            return 60 * 100
         response_json = await response.json(content_type=response.content_type)
         response_data = response_json.get('data', {})
         return response_data.get('total', 0)
 
 
 async def parse_page(
-        session: aiohttp.ClientSession,
         page: int,
         query: str,
         article: int,
         destination: int,
-        tasks: list,
+        tasks: list[asyncio.Task],
         result: dict
 ) -> None:
     """парсинг страниц с товаром"""
@@ -44,13 +44,33 @@ async def parse_page(
         page=str(page),
         query=query
     )
-    response = await session.get(link)
-    if response.status != HTTPStatus.OK:
-        return
-    response_json = await response.json(content_type=response.content_type)
-    response_data = response_json.get('data', {})
-    response_products = response_data.get('products', [])
-    article_list = [product.get('id', None) for product in response_products]
+    async with ClientSession() as session:
+        try:
+            async with session.get(link, timeout=5) as response:
+                if response.status != HTTPStatus.OK:
+                    return await parse_page(
+                        page,
+                        query,
+                        article,
+                        destination,
+                        tasks,
+                        result
+                    )
+                data = await response.content.read()
+        except TimeoutError:
+            return await parse_page(
+                page,
+                query,
+                article,
+                destination,
+                tasks,
+                result
+            )
+        response_json = json.loads(data)
+        response_data = response_json.get('data', {})
+        response_products = response_data.get('products', [])
+        article_list = [product.get('id', None) for product in
+                        response_products]
     try:
         index = article_list.index(article)
         result[destination] = {
@@ -70,26 +90,24 @@ async def async_execute(
 ) -> dict:
     """Получение словаря с позицией товара в пункте выдачи заказа"""
     result = {destination: {} for destination in destinations}
-    async with aiohttp.ClientSession() as session:
-        tasks = []
-        for destination in destinations:
-            total_positions = await get_total_positions(query, destination)
-            page_tasks = []
-            for page in range(1, min(ceil(total_positions / 100), 61)):
-                task = asyncio.ensure_future(parse_page(
-                    session,
-                    page,
-                    query,
-                    article,
-                    destination,
-                    page_tasks,
-                    result,
-                ))
-                page_tasks.append(task)
-            tasks.append(page_tasks)
-        tasks = list(chain(*tasks))
-        if tasks:
-            await asyncio.wait(tasks)
+    tasks = []
+    for destination in destinations:
+        total_positions = await get_total_positions(query, destination)
+        page_tasks = []
+        for page in range(1, min(ceil(total_positions / 100), 61)):
+            task = asyncio.ensure_future(parse_page(
+                page,
+                query,
+                article,
+                destination,
+                page_tasks,
+                result,
+            ))
+            page_tasks.append(task)
+        tasks.append(page_tasks)
+    tasks = list(chain(*tasks))
+    if tasks:
+        await asyncio.wait(tasks)
     return result
 
 
