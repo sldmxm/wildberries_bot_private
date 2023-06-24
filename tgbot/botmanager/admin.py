@@ -1,36 +1,16 @@
-import requests
+from asgiref.sync import async_to_sync
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import path, reverse
+from telegram import Bot
 
 from .models import Mailing, TelegramUser
 from bot.core.settings import settings
-from telegram import Bot
-
-from asgiref.sync import async_to_sync
-
-
-@async_to_sync
-async def send_messages(bot, user_id, message):
-    async with bot:
-        await bot.send_message(user_id, message)
-
-
-@async_to_sync
-async def send_photo(bot, user_id, photo):
-    async with bot:
-        await bot.send_photo(user_id, photo)
-
-
-@async_to_sync
-async def send_document(bot, user_id, document):
-    async with bot:
-        await bot.send_document(user_id, document, write_timeout=10)
 
 
 @admin.register(TelegramUser)
 class TelegramUserAdmin(admin.ModelAdmin):
-    """Регистрация модели в админке"""
+    """Регистрация модели TelegramUser в админке"""
 
     list_display = (
         'id',
@@ -46,7 +26,7 @@ class TelegramUserAdmin(admin.ModelAdmin):
 
 @admin.register(Mailing)
 class MailingAdmin(admin.ModelAdmin):
-    """Регистрация модели рассылок в админке"""
+    """Регистрация модели Mailing в админке"""
     change_form_template = 'admin/botmanager/mailing/change_form.html'
 
     list_display = (
@@ -62,6 +42,24 @@ class MailingAdmin(admin.ModelAdmin):
     search_fields = ('id', 'author', 'content', 'recipients',)
     list_filter = ('author',)
     actions = ['add_all_users', ]
+
+    @async_to_sync
+    async def send_messages(self, bot, user_id, message):
+        """Конвертер для асинхронной отправки текстового сообщения"""
+        async with bot:
+            await bot.send_message(user_id, message)
+
+    @async_to_sync
+    async def send_photo(self, bot, user_id, photo):
+        """Конвертер для асинхронной отправки фото"""
+        async with bot:
+            await bot.send_photo(user_id, photo)
+
+    @async_to_sync
+    async def send_document(self, bot, user_id, document):
+        """Конвертер для асинхронной отправки файла"""
+        async with bot:
+            await bot.send_document(user_id, document, write_timeout=10)
 
     @admin.action(description='Добавить всех пользователей в рассылку')
     def add_all_users(self, request, queryset):
@@ -95,14 +93,20 @@ class MailingAdmin(admin.ModelAdmin):
                     kwargs={'object_id': object_id}))
 
     def send_message(self, request, object_id):
-        """Отправляет соощение в телеграмм"""
+        """Вью-функция. Отправляет соощение в телеграмм."""
         bot = Bot(token=settings.telegram_token)
         message = Mailing.objects.get(pk=object_id)
+
         for recipient in message.recipients.all():
-            send_messages(bot, recipient.telegram_id, message.content)
             if message.image:
-                send_photo(bot, recipient.telegram_id, message.image)
+                self.send_photo(bot, recipient.telegram_id, message.image)
+            message_text = '\n'.join(
+                [message.content, message.link]
+                ) if message.link else message.content
+            self.send_messages(bot, recipient.telegram_id, message_text)
             if message.file_attache:
-                send_document(bot, recipient.telegram_id, message.file_attache)
+                self.send_document(bot, recipient.telegram_id,
+                                   open(str(message.file_attache), 'rb'))
+
         return redirect(reverse('admin:botmanager_mailing_change',
                         kwargs={'object_id': object_id}))
