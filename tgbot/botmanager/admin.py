@@ -5,6 +5,27 @@ from django.urls import path, reverse
 
 from .models import Mailing, TelegramUser
 from bot.core.settings import settings
+from telegram import Bot
+
+from asgiref.sync import async_to_sync
+
+
+@async_to_sync
+async def send_messages(bot, user_id, message):
+    async with bot:
+        await bot.send_message(user_id, message)
+
+
+@async_to_sync
+async def send_photo(bot, user_id, photo):
+    async with bot:
+        await bot.send_photo(user_id, photo)
+
+
+@async_to_sync
+async def send_document(bot, user_id, document):
+    async with bot:
+        await bot.send_document(user_id, document, write_timeout=10)
 
 
 @admin.register(TelegramUser)
@@ -75,23 +96,13 @@ class MailingAdmin(admin.ModelAdmin):
 
     def send_message(self, request, object_id):
         """Отправляет соощение в телеграмм"""
+        bot = Bot(token=settings.telegram_token)
         message = Mailing.objects.get(pk=object_id)
         for recipient in message.recipients.all():
+            send_messages(bot, recipient.telegram_id, message.content)
             if message.image:
-                photo = {'photo': open(str(message.image), 'rb')}
-                url = (f'https://api.telegram.org/bot{settings.telegram_token}'
-                       f'/sendPhoto?chat_id={recipient.telegram_id}')
-                requests.post(url, photo)
-
-            url = (f'https://api.telegram.org/bot{settings.telegram_token}'
-                   f'/sendMessage?chat_id={recipient.telegram_id}'
-                   f'&text={message.content}')
-            requests.post(url)
-
+                send_photo(bot, recipient.telegram_id, message.image)
             if message.file_attache:
-                document = {'document': open(str(message.file_attache), 'rb')}
-                url = (f'https://api.telegram.org/bot{settings.telegram_token}'
-                       f'/sendDocument?chat_id={recipient.telegram_id}')
-                requests.post(url, document)
+                send_document(bot, recipient.telegram_id, message.file_attache)
         return redirect(reverse('admin:botmanager_mailing_change',
                         kwargs={'object_id': object_id}))
