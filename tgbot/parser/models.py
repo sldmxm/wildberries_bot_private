@@ -15,7 +15,7 @@ class Job(models.Model):
 
 class Destination(models.Model):
     city = models.CharField(max_length=50)
-    index = models.PositiveIntegerField()
+    index = models.IntegerField()
 
 
 class ProductPosition(models.Model):
@@ -29,8 +29,20 @@ class ProductPosition(models.Model):
     page = models.IntegerField(validators=(
         MinValueValidator(1),
         MaxValueValidator(60)
-    ))
+    ), null=True)
     position = models.IntegerField(validators=(
         MinValueValidator(1),
         MaxValueValidator(100)
-    ))
+    ), null=True)
+
+    @property
+    def total_position(self):
+        if self.position is not None and self.page is not None:
+            return (self.page - 1) * 100 + self.position
+        return None
+
+
+class Storehouse(models.Model):
+    name = models.CharField(max_length=50)
+    index = models.PositiveIntegerField()
+    
