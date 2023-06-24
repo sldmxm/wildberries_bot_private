@@ -71,7 +71,7 @@ def register_conversation_handlers(application: Application) -> None:
             pattern=CALLBACK_USER_SUBSCRIPTIONS
         )
     )
-    application.add_handler(MessageHandler(
+    application.add_handler(MessageHandler(  # todo: add to conv
         filters.Regex(POSITION_PARSER_PATTERN),
         position_parser
     ))

@@ -22,10 +22,14 @@ async def get_total_positions(query: str, destination: int) -> int:
     """получение общего количества товаров по запросу"""
     link = TOTAL_PRODUCTS_LINK.format(query=query, destination=destination)
     async with ClientSession() as session:
-        response = await session.get(link)
-        if response.status != HTTPStatus.OK:
-            return 60 * 100
-        response_json = await response.json(content_type=response.content_type)
+        try:
+            async with session.get(link, timeout=10) as response:
+                if response.status != HTTPStatus.OK:
+                    return await get_total_positions(query, destination)
+                data = await response.content.read()
+        except TimeoutError:
+            return await get_total_positions(query, destination)
+        response_json = json.loads(data)
         response_data = response_json.get('data', {})
         return response_data.get('total', 0)
 
