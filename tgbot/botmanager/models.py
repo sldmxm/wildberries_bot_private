@@ -1,6 +1,5 @@
 from django.db import models
 
-
 MAX_LENGTH_USERNAME = 32
 MAX_LENGTH_FIRST_NAME = 15
 MAX_LENGTH_ID = 10
@@ -8,7 +7,6 @@ MAX_LENGTH_PHONE_NUMBER = 12
 NAME_VERBOSE = 'Имя пользователя'
 USERNAME_VERBOSE = 'Имя пользователя в Telegram'
 ID_VERBOSE = 'Идентификатор пользователя Telegram'
-PHONE_NUMBER_VERBOSE = 'Номер телефона пользователя Telegram'
 
 
 class TelegramUser(models.Model):
