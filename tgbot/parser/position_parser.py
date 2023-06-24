@@ -22,16 +22,10 @@ async def get_total_positions(query: str, destination: int) -> int:
     """получение общего количества товаров по запросу"""
     link = TOTAL_PRODUCTS_LINK.format(query=query, destination=destination)
     async with ClientSession() as session:
-        try:
-            async with session.get(link, timeout=10) as response:
-                if response.status != HTTPStatus.OK:
-                    return await get_total_positions(query, destination)
-                data = await response.content.read()
-        except TimeoutError:
-            return await get_total_positions(query, destination)
-        response_json = json.loads(data)
-        response_data = response_json.get('data', {})
-        return response_data.get('total', 0)
+        response_data = await session.get_data(link)
+    response_json = json.loads(response_data)
+    data = response_json.get('data', {})
+    return data.get('total', 0)
 
 
 async def parse_page(
@@ -49,42 +43,18 @@ async def parse_page(
         query=query
     )
     async with ClientSession() as session:
-        try:
-            async with session.get(link, timeout=5) as response:
-                if response.status != HTTPStatus.OK:
-                    return await parse_page(
-                        page,
-                        query,
-                        article,
-                        destination,
-                        tasks,
-                        result
-                    )
-                data = await response.content.read()
-        except TimeoutError:
-            return await parse_page(
-                page,
-                query,
-                article,
-                destination,
-                tasks,
-                result
-            )
-        response_json = json.loads(data)
-        response_data = response_json.get('data', {})
-        response_products = response_data.get('products', [])
-        article_list = [product.get('id', None) for product in
-                        response_products]
-    try:
-        index = article_list.index(article)
-        result[destination] = {
-            'page': page,
-            'position': index + 1
-        }
-        for task in tasks:
-            task.cancel()
-    except ValueError:
-        pass
+        data = await session.get_data(link)
+    response_json = json.loads(data)
+    response_data = response_json.get('data', {})
+    response_products = response_data.get('products', [])
+    for product in response_products:
+        if product.get('id', None) == article:
+            result[destination] = {
+                'page': page,
+                'position': index + 1
+            }
+            for task in tasks:
+                task.cancel()
 
 
 async def async_execute(
