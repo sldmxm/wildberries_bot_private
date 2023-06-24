@@ -24,11 +24,12 @@ class ClientSession:
     #  todo: add get param
     async def get_data(self, link):
         try:
-            async with self.session.get(link, timeout=5) as response:
+            async with self.session.get(link, timeout=10) as response:
                 if response.status != HTTPStatus.OK:
                     return await self.get_data(link)
                 return await response.content.read()
         except TimeoutError:
+            print('tm')
             return await self.get_data(link)
         except Exception as untitled_exception:
             raise Exception

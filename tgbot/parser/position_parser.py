@@ -47,7 +47,9 @@ async def parse_page(
     response_json = json.loads(data)
     response_data = response_json.get('data', {})
     response_products = response_data.get('products', [])
-    for product in response_products:
+    if destination == 12358058 and page == 1:
+        print(page, response_products)
+    for index, product in enumerate(response_products):
         if product.get('id', None) == article:
             result[destination] = {
                 'page': page,
