@@ -88,7 +88,7 @@ async def position_parse_keyboard(article: int, query: str):
         hours: await Callback.objects.acreate(
             article=article,
             query=query,
-            interval=timedelta(seconds=hours),  # todo: change to hours
+            interval=timedelta(hours=hours),
         ) for hours in [1, 6, 12]
     }
     keyboard = [

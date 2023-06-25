@@ -1,6 +1,7 @@
+from http import HTTPStatus
+
 import aiohttp
 from fake_useragent import UserAgent
-from http import HTTPStatus
 
 
 class ClientSession:
@@ -21,7 +22,6 @@ class ClientSession:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.session.close()
 
-    #  todo: add get param
     async def get_data(self, link):
         try:
             async with self.session.get(link, timeout=10) as response:
@@ -29,7 +29,4 @@ class ClientSession:
                     return await self.get_data(link)
                 return await response.content.read()
         except TimeoutError:
-            print('tm')
             return await self.get_data(link)
-        except Exception as untitled_exception:
-            raise Exception

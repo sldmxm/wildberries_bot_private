@@ -45,4 +45,3 @@ class ProductPosition(models.Model):
 class Storehouse(models.Model):
     name = models.CharField(max_length=50)
     index = models.PositiveIntegerField()
-    

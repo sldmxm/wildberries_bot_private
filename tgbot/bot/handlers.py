@@ -71,10 +71,6 @@ def register_conversation_handlers(application: Application) -> None:
             pattern=CALLBACK_USER_SUBSCRIPTIONS
         )
     )
-    application.add_handler(MessageHandler(  # todo: add to conv
-        filters.Regex(POSITION_PARSER_PATTERN),
-        position_parser
-    ))
     position_parser_conversation = ConversationHandler(
         entry_points=[
             CallbackQueryHandler(
@@ -84,7 +80,10 @@ def register_conversation_handlers(application: Application) -> None:
         ],
         states={
             POSITION_PARSER_CONVERSATION: [
-
+                MessageHandler(
+                    filters.Regex(POSITION_PARSER_PATTERN),
+                    position_parser
+                ),
                 CallbackQueryHandler(
                     update_position_parser,
                     pattern=CALLBACK_UPDATE_PATTERN

@@ -1,10 +1,9 @@
 import asyncio
-from http import HTTPStatus
+import json
 from itertools import chain
 from math import ceil
 
-import aiohttp
-
+from .clientsession import ClientSession
 from .constants import PAGE_PARSING_LINK, TOTAL_PRODUCTS_LINK
 from .models import Destination
 from bot.constants.text import (
@@ -12,8 +11,7 @@ from bot.constants.text import (
     PRODUCT_POSITION_NOT_FOUND_MESSAGE,
     PRODUCT_POSITION_SCHEDULE_MESSAGE,
 )
-import json
-from .clientsession import ClientSession
+
 
 loop = asyncio.get_event_loop()
 
@@ -47,8 +45,6 @@ async def parse_page(
     response_json = json.loads(data)
     response_data = response_json.get('data', {})
     response_products = response_data.get('products', [])
-    if destination == 12358058 and page == 1:
-        print(page, response_products)
     for index, product in enumerate(response_products):
         if product.get('id', None) == article:
             result[destination] = {
