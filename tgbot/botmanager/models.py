@@ -1,16 +1,13 @@
 from django.db import models
 
-
 MAX_LENGTH_USERNAME = 32
 MAX_LENGTH_FIRST_NAME = 15
 MAX_LENGTH_ID = 10
 MAX_LENGTH_PHONE_NUMBER = 12
-USERNAME_VERBOSE = 'Никнейм пользователя в Telegram'
-FIRST_NAME_VERBOSE = 'Имя пользователя в Telegram'
+NAME_VERBOSE = 'Имя пользователя'
+USERNAME_VERBOSE = 'Имя пользователя в Telegram'
 ID_VERBOSE = 'Идентификатор пользователя Telegram'
-PHONE_NUMBER_VERBOSE = 'Номер телефона пользователя Telegram'
 CREATED_AT_VERBOSE = 'Дата первого запроса'
-
 
 class TelegramUser(models.Model):
     """Базовая модель для управления данными пользователей ТГ бота"""
@@ -21,18 +18,12 @@ class TelegramUser(models.Model):
         unique=True,
     )
     first_name = models.CharField(
-        verbose_name=USERNAME_VERBOSE,
+        verbose_name=NAME_VERBOSE,
         max_length=MAX_LENGTH_FIRST_NAME,
     )
     telegram_id = models.CharField(
         verbose_name=ID_VERBOSE,
         max_length=MAX_LENGTH_ID,
-    )
-    phone_number = models.CharField(
-        verbose_name=PHONE_NUMBER_VERBOSE,
-        max_length=MAX_LENGTH_PHONE_NUMBER,
-        blank=True,
-        null=True,
     )
 
     created_at = models.DateTimeField(

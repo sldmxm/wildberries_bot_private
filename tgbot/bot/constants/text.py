@@ -18,27 +18,35 @@ PARSING_START_MESSAGE = (
 PARSING_WAIT_MESSAGE = '''
 Запрос создан! В ближайшие время вам будет отправлен результат.
 '''
+MEMBER_STATUSES = ('administrator', 'member', 'creator',)
 PARSER_MESSAGE = '''
-Результат:
-
 Артикул: {article}
 Запрос: {query}
-
 {result}
 '''
-PRODUCT_POSITION_MESSAGE = '{city} - Место: {position} (стр. {page})\n'
+PRODUCT_POSITION_MESSAGE = '{city} - Позиция: {position}\n'
 PRODUCT_POSITION_SCHEDULE_MESSAGE = (
-    '{city} - Место: {position}/{prev_position} '
-    '({position_arrow} {position_difference}) (стр. {page}/{prev_page} '
-    '({page_arrow} {page_difference}))'
+    '{city} - Позиция: {position}\n'
+    'Рост/падение {position_difference}{position_arrow}\n'
 )
 PRODUCT_POSITION_NOT_FOUND_MESSAGE = '{city} - нет на первых 60 страниц\n'
+POSITION_PARSER_PATTERN = r'^(\d+)\s+(.+)$'
 RESIDUE_PARSER_START_MESSAGE = '''
 Отправьте артикул для вывода остатков:
 
 Например:
 36704403
 '''
+RESIDUE_PARSER_MESSAGE = '''
+Результат:
+Остатки по складам
+{residue_in_storehouses}
+
+Остатки по размерам
+{residual_sizes}
+'''
+RESIDUE_PARSER_COUNT = '{name}: {count} шт.'
+RESIDUE_PARSER_PATTERN = r'^(\d+)$'
 ACCEPTANCE_RATE_START_MESSAGE = '''
 Выберите склад:
 
@@ -53,3 +61,4 @@ SUBSCRIPTIONS_MESSAGE = '''
 SUBSCRIBE_MESSAGE = 'Вы подписались'
 UNSUBSCRIBE_MESSAGE = 'Вы отписались'
 NO_SUBSCRIPTIONS_MESSAGE = 'У вас нет подписок'
+ERROR_MESSAGE = 'Извините, у меня не получилось обработать запрос.'
