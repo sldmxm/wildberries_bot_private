@@ -3,6 +3,16 @@ from telegram.ext import ContextTypes
 
 from bot.constants.text import MEMBER_STATUSES
 from bot.core.settings import settings
+from botmanager.models import TelegramUser
+
+
+async def write_user(update: Update):
+    """Запись данных пользователя в БД заявок."""
+    await TelegramUser(
+        username=update.effective_chat.username,
+        first_name=update.effective_chat.first_name,
+        telegram_id=update.effective_chat.id,
+    ).asave()
 
 
 async def check_subscription(
