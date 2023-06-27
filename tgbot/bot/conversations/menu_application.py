@@ -240,10 +240,11 @@ async def acceptance_rate(
 ):
     """Обработка коэффициента приемки"""
     reply_markup = return_to_storehouse_page_1_keyboard()
-    result = await get_rates(update.callback_query.data.split(':')[1])
+    storehouse = update.callback_query.data.split(':')[1]
+    table = await get_rates(storehouse)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=f'<pre>{result}</pre>',
+        text=f'{storehouse}:\n<pre>{table}</pre>',
         parse_mode='HTML',
         reply_markup=reply_markup,
     )
