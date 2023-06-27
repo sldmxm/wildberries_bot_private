@@ -69,5 +69,11 @@ python manage.py runserver
 Админку бота можно посмотреть на странице http://127.0.0.1:8000/admin/
 Для тестирования самого бота необходимо создать собственный .env-файл по шаблону .env.example
 
+Для использования прокси нужно добавить информацию в .env файл в таком формате:
+```dotenv
+HTTPS_PROXY='https://USER:PASSWORD@PROXY_IP:PROXY_PORT'
+HTTP_PROXY='http://USER:PASSWORD@PROXY_IP:PROXY_PORT'
+```
+
 ## Требования к версии Python
 Работает на Python 3.11.0

@@ -18,7 +18,8 @@ def main():
     """Запуск бота."""
     application = (
         ApplicationBuilder().token(
-            settings.telegram_token).post_init(setup_my_commands).build()
+            settings.telegram_token
+        ).post_init(setup_my_commands).concurrent_updates(True).build()
     )
     register_conversation_handlers(application)
     start_jobs(application)
