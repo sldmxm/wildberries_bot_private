@@ -164,3 +164,7 @@ cython_debug/
 
 # Django migrations
 migrations/
+
+# Mailing attaches
+tgbot/botmanager/files/
+tgbot/botmanager/images/
