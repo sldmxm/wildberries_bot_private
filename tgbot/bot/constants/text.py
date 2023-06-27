@@ -42,9 +42,6 @@ RESIDUE_PARSER_START_MESSAGE = '''
 '''
 ACCEPTANCE_RATE_START_MESSAGE = '''
 Выберите склад:
-
-Например:
-
 '''
 SUBSCRIPTIONS_MESSAGE = '''
 Ваши подписки:

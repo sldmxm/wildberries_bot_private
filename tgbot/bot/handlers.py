@@ -8,13 +8,17 @@ from telegram.ext import (
 )
 
 from bot.constants.callback import (
-    CALLBACK_ACCEPTANCE_RATE,
+    CALLBACK_ACCEPTANCE_RATE_HELP,
     CALLBACK_CANCEL,
     CALLBACK_CHECK_SUBSCRIBE,
     CALLBACK_EXPORT_RESULTS_PATTERN,
     CALLBACK_POSITION_PARSER,
     CALLBACK_RESIDUE_PARSER,
     CALLBACK_SCHEDULE_PARSER_PATTERN,
+    CALLBACK_SH_PAGE_1,
+    CALLBACK_SH_PAGE_2,
+    CALLBACK_SH_PAGE_3,
+    CALLBACK_STOREHOUSE_PATTERN,
     CALLBACK_UNSUBSCRIBE_PATTERN,
     CALLBACK_UPDATE_PATTERN,
     CALLBACK_USER_SUBSCRIPTIONS,
@@ -25,7 +29,6 @@ from bot.conversations.menu_application import (
     POSITION_PARSER_CONVERSATION,
     RESIDUE_PARSER_CONVERSATION,
     acceptance_rate,
-    acceptance_rate_help_message,
     callback_subscribe_position_parser,
     cancel,
     export_results,
@@ -34,6 +37,9 @@ from bot.conversations.menu_application import (
     position_parser_help_message,
     residue_parser,
     residue_parser_help_message,
+    storehouses_page_1,
+    storehouses_page_2,
+    storehouses_page_3,
     unsubscribe,
     update_position_parser,
     user_subscriptions,
@@ -132,16 +138,28 @@ def register_conversation_handlers(application: Application) -> None:
     acceptance_rate_conversation = ConversationHandler(
         entry_points=[
             CallbackQueryHandler(
-                acceptance_rate_help_message,
-                pattern=CALLBACK_ACCEPTANCE_RATE
+                storehouses_page_1,
+                pattern=CALLBACK_ACCEPTANCE_RATE_HELP
             )
         ],
         states={
             ACCEPTANCE_RATE_CONVERSATION: [
-                MessageHandler(
-                    filters.Text(),
-                    acceptance_rate
-                )
+                CallbackQueryHandler(
+                    acceptance_rate,
+                    pattern=CALLBACK_STOREHOUSE_PATTERN
+                ),
+                CallbackQueryHandler(
+                    storehouses_page_1,
+                    pattern=CALLBACK_SH_PAGE_1
+                ),
+                CallbackQueryHandler(
+                    storehouses_page_2,
+                    pattern=CALLBACK_SH_PAGE_2
+                ),
+                CallbackQueryHandler(
+                    storehouses_page_3,
+                    pattern=CALLBACK_SH_PAGE_3
+                ),
             ]
         },
         fallbacks=[
