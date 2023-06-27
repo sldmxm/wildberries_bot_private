@@ -71,7 +71,6 @@ def register_conversation_handlers(application: Application) -> None:
             pattern=CALLBACK_USER_SUBSCRIPTIONS
         )
     )
-
     position_parser_conversation = ConversationHandler(
         entry_points=[
             CallbackQueryHandler(
