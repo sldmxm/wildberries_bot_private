@@ -11,6 +11,7 @@ from .constants import (
 )
 from .models import Destination
 from bot.constants.text import (
+    ADVERT_PRODUCT_POSITION_MESSAGE,
     PRODUCT_POSITION_MESSAGE,
     PRODUCT_POSITION_NOT_FOUND_MESSAGE,
     PRODUCT_POSITION_SCHEDULE_MESSAGE,
@@ -91,7 +92,8 @@ async def async_execute(
         result = {
             destination: {
                 'page': advert_position // 100 + 1,
-                'position': advert_position % 100
+                'position': advert_position % 100,
+                'is_advert': True
             } for destination in destinations
         }
         return result
@@ -119,7 +121,11 @@ async def async_execute(
 
 async def get_result_text(results: dict) -> str:
     """создание текстового сообщения с положением товаров"""
-    result_text = ''
+    is_advert = list(results.values())[0].get('is_advert', False)
+    if is_advert:
+        result_text = ADVERT_PRODUCT_POSITION_MESSAGE
+    else:
+        result_text = ''
     async for destination in Destination.objects.all():
         result = results.get(destination.index, {})
         page = result.get('page', None)
