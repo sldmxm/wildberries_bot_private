@@ -75,5 +75,13 @@ HTTPS_PROXY='https://USER:PASSWORD@PROXY_IP:PROXY_PORT'
 HTTP_PROXY='http://USER:PASSWORD@PROXY_IP:PROXY_PORT'
 ```
 
+Для использования webhook нужно указать url сервера, порт (80, 88, 443 или 8443) и localhost. 
+Если не указывать WEBHOOK_URL, то будет использоваться web polling.
+```dotenv
+WEBHOOK_URL='https://YOUR_SERVER_URL'
+WEBHOOK_PORT=8443
+WEBHOOK_LOCAL_LINK='0.0.0.0'
+```
+
 ## Требования к версии Python
 Работает на Python 3.11.0

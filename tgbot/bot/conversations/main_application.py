@@ -23,4 +23,11 @@ def main():
     )
     register_conversation_handlers(application)
     start_jobs(application)
-    application.run_polling()
+    if settings.webhook_url is None:
+        application.run_polling()
+    else:
+        application.run_webhook(
+            listen=settings.webhook_local_link,
+            port=settings.webhook_port,
+            webhook_url=settings.webhook_url
+        )
