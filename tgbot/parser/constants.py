@@ -16,3 +16,7 @@ RESIDUE_PARSING_LINK = (
         'dest=-445276&'
         'nm={article}'
 )
+ADVERT_PRODUCTS_LINK = (
+    'https://catalog-ads.wildberries.ru/api/v5/search?'
+    'keyword={query}'
+)

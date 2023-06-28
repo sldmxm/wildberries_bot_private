@@ -24,6 +24,7 @@ PARSER_MESSAGE = '''
 Запрос: {query}
 {result}
 '''
+ADVERT_PRODUCT_POSITION_MESSAGE = 'рекламное объявление\n'
 PRODUCT_POSITION_MESSAGE = '{city} - Позиция: {position}\n'
 PRODUCT_POSITION_SCHEDULE_MESSAGE = (
     '{city} - Позиция: {position}\n'
