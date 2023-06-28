@@ -23,6 +23,7 @@ from bot.constants.callback import (
     CALLBACK_UPDATE_PATTERN,
     CALLBACK_USER_SUBSCRIPTIONS,
 )
+from bot.constants.text import POSITION_PARSER_PATTERN, RESIDUE_PARSER_PATTERN
 from bot.conversations.command_application import help, start, stop
 from bot.conversations.menu_application import (
     ACCEPTANCE_RATE_CONVERSATION,
@@ -76,7 +77,6 @@ def register_conversation_handlers(application: Application) -> None:
             pattern=CALLBACK_USER_SUBSCRIPTIONS
         )
     )
-
     position_parser_conversation = ConversationHandler(
         entry_points=[
             CallbackQueryHandler(
@@ -87,7 +87,7 @@ def register_conversation_handlers(application: Application) -> None:
         states={
             POSITION_PARSER_CONVERSATION: [
                 MessageHandler(
-                    filters.Text(),
+                    filters.Regex(POSITION_PARSER_PATTERN),
                     position_parser
                 ),
                 CallbackQueryHandler(
@@ -120,7 +120,7 @@ def register_conversation_handlers(application: Application) -> None:
         states={
             RESIDUE_PARSER_CONVERSATION: [
                 MessageHandler(
-                    filters.Text(),
+                    filters.Regex(RESIDUE_PARSER_PATTERN),
                     residue_parser
                 )
             ]
