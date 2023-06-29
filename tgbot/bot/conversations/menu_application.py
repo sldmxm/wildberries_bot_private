@@ -2,6 +2,7 @@ import re
 from parser.jobs import create_job, get_user_jobs, stop_job
 from parser.position_parser import get_position, get_result_text
 from parser.residue_parser import get_residue
+from tgbot.settings import logger
 
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
@@ -49,6 +50,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка меню"""
     query = update.callback_query
     if await check_subscription(update, context):
+        logger.info(f'Пользователь с chat id {update.effective_chat.id} подписан на канал и переходит к парсингу')
         reply_markup = menu_keyboard()
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
@@ -58,6 +60,7 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await write_user(update)
     else:
         await query.answer('Вы не подписались на канал.')
+        logger.info(f'Пользователь с chat id {update.effective_chat.id} не подписан на канал Шапкина')
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -87,6 +90,7 @@ async def position_parser_help_message(
 async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера позиций"""
     match = re.match(POSITION_PARSER_PATTERN, update.message.text)
+    logger.info(f'Пользователь с chat id {update.effective_chat.id} ищет позицию товара {int(match.group(1))}')
     response_text = "Invalid request"
     if match:
         await context.bot.send_message(
@@ -113,6 +117,7 @@ async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
         chat_id=update.effective_chat.id,
         text=response_text
     )
+    logger.info(f'Пользователь с chat id {update.effective_chat.id} ввёл в парсере неверное название товара ')
 
 
 async def update_position_parser(
@@ -121,6 +126,8 @@ async def update_position_parser(
 ):
     """Обработка обновления позиции парсера"""
     match = re.match(CALLBACK_UPDATE_PATTERN, update.callback_query.data)
+    logger.info(f'Пользователь с chat id {update.effective_chat.id}' +
+                f'сделал запрос на обновление позиции товара {int(match.group(1))}')
     callback_id = int(match.group(1))
     callback_data = await Callback.objects.aget(pk=callback_id)
     results = await get_position(callback_data.article, callback_data.query)
@@ -156,6 +163,7 @@ async def callback_subscribe_position_parser(
     )
     callback_id = int(match.group(1))
     callback_data = await Callback.objects.aget(pk=callback_id)
+    logger.info(f'Пользователь с chat id {update.effective_chat.id} создал подписку на  товар {callback_id}')
     await create_job(
         update=update,
         context=context,
@@ -189,6 +197,7 @@ async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера остатков"""
     match = re.match(RESIDUE_PARSER_PATTERN, update.message.text)
     article = int(match.group(1))
+    logger.info(f'Пользователь с chat id {update.effective_chat.id} сделал запрос остатков товара {article}')
     parser_data = await get_residue(article)
     if not parser_data:
         await context.bot.send_message(
@@ -263,8 +272,9 @@ async def user_subscriptions(
 
 
 async def export_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка выгруски результатов"""
-    ...
+    """Обработка выгрузки результатов"""
+    logger.info(f'Пользователь с chat id {update.effective_chat.id} сделал запрос на выгрузку результатов')
+    pass
 
 
 async def unsubscribe(
@@ -274,6 +284,7 @@ async def unsubscribe(
     """Обработка отписки на позицию"""
     match = re.match(CALLBACK_UNSUBSCRIBE_PATTERN, update.callback_query.data)
     job_id = int(match.group(1))
+    logger.info(f'Пользователь с chat id {update.effective_chat.id} отписался от товара {job_id}')
     await stop_job(update=update, context=context, job_id=job_id)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
