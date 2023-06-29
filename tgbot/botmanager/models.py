@@ -78,8 +78,8 @@ class Mailing(models.Model):
 
     class Meta:
         ordering = ('-pub_date',)
-        verbose_name = 'Сообщение рассылки'
-        verbose_name_plural = 'Сообщения рассылки'
+        verbose_name = 'Рассылка'
+        verbose_name_plural = 'Рассылки'
 
     def __str__(self):
         return f'{self.pub_date}: ({self.author}) - {self.content[:15]}'

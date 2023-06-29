@@ -26,7 +26,7 @@ class TelegramUserAdmin(admin.ModelAdmin):
 @admin.register(Mailing)
 class MailingAdmin(admin.ModelAdmin):
     """Регистрация модели Mailing в админке"""
-    change_form_template = 'admin/botmanager/mailing/change_form.html'
+    # change_form_template = 'admin/botmanager/mailing/change_form.html'
 
     list_display = (
         'id',
@@ -41,6 +41,14 @@ class MailingAdmin(admin.ModelAdmin):
     search_fields = ('id', 'author', 'content', 'recipients',)
     list_filter = ('author',)
     actions = ['add_all_users', ]
+
+    def response_change(self, request, obj):
+        if '_add_all_users' in request.POST:
+            self.set_recipients(request, obj.id)
+        elif '_send_mailing' in request.POST:
+            self.send_message(request, obj.id)
+        else:
+            return super().response_change(request, obj)
 
     @async_to_sync
     async def send_messages(self, bot, user_id, message):
@@ -83,7 +91,7 @@ class MailingAdmin(admin.ModelAdmin):
         return custom_urls + urls
 
     def set_recipients(self, request, object_id):
-        """Вью-функция. Добавляет пользователей по нажатию кнопки."""
+        """Добавляет пользователей по нажатию кнопки."""
         self.add_all_users(
             request,
             queryset=Mailing.objects.filter(pk=object_id))
@@ -92,7 +100,7 @@ class MailingAdmin(admin.ModelAdmin):
                     kwargs={'object_id': object_id}))
 
     def send_message(self, request, object_id):
-        """Вью-функция. Отправляет соощение в телеграмм."""
+        """Отправляет соощение в телеграмм."""
         bot = Bot(token=settings.telegram_token)
         message = Mailing.objects.get(pk=object_id)
 
