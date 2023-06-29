@@ -1,7 +1,7 @@
 from asgiref.sync import async_to_sync
 from django.contrib import admin
 from django.shortcuts import redirect
-from django.urls import path, reverse
+from django.urls import reverse
 from telegram import Bot
 
 from .models import Mailing, TelegramUser
@@ -17,10 +17,15 @@ class TelegramUserAdmin(admin.ModelAdmin):
         'username',
         'first_name',
         'telegram_id',
+        'created_at',
     )
 
     search_fields = ('id', 'username')
     list_filter = ('username',)
+
+
+admin.site.site_title = 'Административная панель бота'
+admin.site.site_header = 'Административная панель бота'
 
 
 @admin.register(Mailing)
@@ -45,8 +50,13 @@ class MailingAdmin(admin.ModelAdmin):
     def response_change(self, request, obj):
         if '_add_all_users' in request.POST:
             self.set_recipients(request, obj.id)
+            return redirect(reverse('admin:botmanager_mailing_change',
+                                    kwargs={'object_id': obj.id}))
         elif '_send_mailing' in request.POST:
             self.send_message(request, obj.id)
+            return redirect(reverse('admin:botmanager_mailing_change',
+                                    kwargs={'object_id': obj.id}))
+
         else:
             return super().response_change(request, obj)
 
@@ -76,28 +86,11 @@ class MailingAdmin(admin.ModelAdmin):
             for user in users:
                 messge.recipients.add(user)
 
-    def get_urls(self):
-        """Добавляет пути для обработки кастомных кнопок:
-        - Добавить всех пользователей
-        - Отправить сообщение"""
-        urls = super(MailingAdmin, self).get_urls()
-        custom_urls = [
-            path('<int:object_id>/change/add_all_users',
-                 self.admin_site.admin_view(self.set_recipients),
-                 name='recipients_view'),
-            path('<int:object_id>/change/send_message',
-                 self.admin_site.admin_view(self.send_message),
-                 name='message_view'), ]
-        return custom_urls + urls
-
     def set_recipients(self, request, object_id):
         """Добавляет пользователей по нажатию кнопки."""
         self.add_all_users(
             request,
             queryset=Mailing.objects.filter(pk=object_id))
-        return redirect(
-            reverse('admin:botmanager_mailing_change',
-                    kwargs={'object_id': object_id}))
 
     def send_message(self, request, object_id):
         """Отправляет соощение в телеграмм."""
@@ -114,6 +107,3 @@ class MailingAdmin(admin.ModelAdmin):
             if message.file_attache:
                 self.send_document(bot, recipient.telegram_id,
                                    open(str(message.file_attache), 'rb'))
-
-        return redirect(reverse('admin:botmanager_mailing_change',
-                        kwargs={'object_id': object_id}))

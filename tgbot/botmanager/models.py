@@ -11,6 +11,7 @@ MAX_LENGTH_PHONE_NUMBER = 12
 NAME_VERBOSE = 'Имя пользователя'
 USERNAME_VERBOSE = 'Имя пользователя в Telegram'
 ID_VERBOSE = 'Идентификатор пользователя Telegram'
+CREATED_AT_VERBOSE = 'Дата первого запроса'
 
 
 class TelegramUser(models.Model):
@@ -28,6 +29,11 @@ class TelegramUser(models.Model):
     telegram_id = models.CharField(
         verbose_name=ID_VERBOSE,
         max_length=MAX_LENGTH_ID,
+    )
+
+    created_at = models.DateTimeField(
+        verbose_name=CREATED_AT_VERBOSE,
+        auto_now_add=True
     )
 
     class Meta:
