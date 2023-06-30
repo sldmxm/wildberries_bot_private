@@ -6,8 +6,12 @@ from django.core.management import BaseCommand
 
 
 CSV_TABLES = {
-    'Destinations': DictReader(open('../data/destination.csv')),
-    'Storehouse': DictReader(open('../data/storehouse.csv')),
+    'Destinations': DictReader(
+        open('../data/destination.csv', encoding='utf-8')
+    ),
+    'Storehouse': DictReader(
+        open('../data/storehouse.csv', encoding='utf-8')
+    ),
 }
 
 
