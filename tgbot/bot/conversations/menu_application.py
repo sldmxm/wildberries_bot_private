@@ -6,6 +6,7 @@ from parser.residue_parser import get_residue
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 
+from bot.constants import actions
 from bot.constants.callback import (
     CALLBACK_SCHEDULE_PARSER_PATTERN,
     CALLBACK_UNSUBSCRIBE_PATTERN,
@@ -35,7 +36,7 @@ from bot.keyboards import (
     position_parse_keyboard,
 )
 from bot.models import Callback
-from bot.utils import check_subscription, write_user
+from bot.utils import check_subscription, register_user_action, write_user
 
 
 (
@@ -84,6 +85,7 @@ async def position_parser_help_message(
     return POSITION_PARSER_CONVERSATION
 
 
+@register_user_action(actions.POSITION_PARSER)
 async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера позиций"""
     match = re.match(POSITION_PARSER_PATTERN, update.message.text)
@@ -115,6 +117,7 @@ async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+@register_user_action(actions.UPDATE_POSITION)
 async def update_position_parser(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
@@ -145,6 +148,7 @@ async def update_position_parser(
     return POSITION_PARSER_CONVERSATION
 
 
+@register_user_action(actions.SUBSCRIBE)
 async def callback_subscribe_position_parser(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
