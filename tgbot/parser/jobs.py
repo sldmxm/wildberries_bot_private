@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+import pytz
 from asgiref.sync import sync_to_async
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Application, CallbackContext, ContextTypes
@@ -7,6 +8,7 @@ from telegram.ext import Application, CallbackContext, ContextTypes
 from .models import Destination, Job, ProductPosition
 from .position_parser import get_position, get_result_text
 from bot.constants import callback, text
+from tgbot import settings
 
 
 async def create_job(
@@ -19,27 +21,33 @@ async def create_job(
 ) -> None:
     """Создание задачи для подписки на парсинг"""
     if start_time is None:
-        start_time = datetime.now()
+        timezone = pytz.timezone(settings.TIME_ZONE)
+        start_time = datetime.now(timezone)
     user_id = update.effective_chat.id
     db_job = await Job.objects.filter(
         article=article,
         query=query,
         user_id=user_id
     ).afirst()
-    if db_job is None:
-        db_job = await Job.objects.acreate(
-            article=article,
-            query=query,
-            user_id=user_id,
-            interval=interval,
-            start_time=start_time
-        )
-    elif interval != db_job.interval:
-        db_job.interval = interval
-    elif db_job.finished:
-        db_job.finished = False
-    else:
+    if (
+            db_job is not None and
+            not db_job.finished and
+            interval == db_job.interval
+    ):
         return
+    if db_job is not None:
+        job = context.job_queue.get_jobs_by_name(str(db_job.pk))
+        if job:
+            job[0].schedule_removal()
+            await db_job.adelete()
+
+    db_job = await Job.objects.acreate(
+        article=article,
+        query=query,
+        user_id=user_id,
+        interval=interval,
+        start_time=start_time
+    )
     await db_job.asave()
 
     context.job_queue.run_repeating(

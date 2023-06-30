@@ -1,9 +1,11 @@
 from datetime import date, datetime, time, timedelta
 
+import pytz
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from bot.constants import callback
 from bot.models import Callback
+from tgbot import settings
 
 
 def start_keyboard():
@@ -66,7 +68,8 @@ async def position_parse_keyboard(article: int, query: str):
         article=article,
         query=query
     )
-    nine_am = time(hour=9)
+    timezone = pytz.timezone(settings.TIME_ZONE)
+    nine_am = time(hour=9, tzinfo=timezone)
     current_date = date.today()
     start_time = datetime.combine(current_date, nine_am)
     callback_daily = await Callback.objects.acreate(
