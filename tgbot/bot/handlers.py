@@ -8,7 +8,7 @@ from telegram.ext import (
 )
 
 from bot.constants import callback, text
-from bot.conversations import menu_application, command_application
+from bot.conversations import command_application, menu_application
 
 
 def register_conversation_handlers(application: Application) -> None:

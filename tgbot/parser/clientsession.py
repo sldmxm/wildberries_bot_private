@@ -1,9 +1,8 @@
 from http import HTTPStatus
 
 import aiohttp
-from fake_useragent import UserAgent
-
 from aiohttp.client_exceptions import ClientError
+from fake_useragent import UserAgent
 
 
 class ClientSession:

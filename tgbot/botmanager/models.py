@@ -1,5 +1,6 @@
 from django.db import models
 
+
 MAX_LENGTH_USERNAME = 32
 MAX_LENGTH_FIRST_NAME = 15
 MAX_LENGTH_ID = 10
