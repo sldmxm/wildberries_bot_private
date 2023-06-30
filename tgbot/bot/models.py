@@ -27,6 +27,7 @@ class UserAction(models.Model):
     telegram_user = models.ForeignKey(
         TelegramUser,
         on_delete=models.CASCADE,
+        related_name='user'
     )
     datetime = models.DateTimeField(auto_now_add=True)
     action = models.CharField(max_length=20, choices=USER_ACTIONS)

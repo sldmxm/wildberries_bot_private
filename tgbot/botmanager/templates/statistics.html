@@ -5,8 +5,8 @@ User Statistics
 {% endblock %}
 
 {% block content %}
-   <h1>Статистика количества пользователей по датам</h1>
-
+   <h1>Количество пользователей по датам</h1>
+    <p>
     <table>
         <tr>
            <th>Дата</th>
@@ -21,5 +21,42 @@ User Statistics
         </tr>
         {% endfor %}
     </table>
+    </p>
+
+    <p>
+    <h1>Запросы в разрезе пользователей </h1>
+
+    <table>
+        <tr>
+           <th>Нинейм пользователя</th>
+            <th>Количество запросов</th>
+        </tr>
+        {% for row in user_actions %}
+        <tr>
+            <td>{{ row.telegram_user__username }}</td>
+            <td>{{ row.count_requests }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </p>
+    <p>
+        <h1>Запросы по датам </h1>
+    
+        <table>
+            <tr>
+               <th>Дата</th>
+                <th>Количество запросов</th>
+            </tr>
+            {% for row in datetime_actions %}
+            <tr>
+                <td>{{ row.request_date }}</td>
+                <td>{{ row.total }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </p>
+
+    <p> 
+        <h1>Запросов на пользователя - {{ all_requests }} {{ all_users }} {{ requests_for_user }} </h1>
 {% endblock %}
 

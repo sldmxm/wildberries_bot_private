@@ -9,6 +9,7 @@ USERNAME_VERBOSE = 'Имя пользователя в Telegram'
 ID_VERBOSE = 'Идентификатор пользователя Telegram'
 CREATED_AT_VERBOSE = 'Дата первого запроса'
 
+
 class TelegramUser(models.Model):
     """Базовая модель для управления данными пользователей ТГ бота"""
 
