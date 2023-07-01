@@ -124,3 +124,25 @@ async def position_parse_keyboard(article: int, query: str):
         ]
     ]
     return InlineKeyboardMarkup(keyboard)
+
+
+async def schedule_parse_keyboard(job_id):
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                'Отписаться',
+                callback_data=callback.CALLBACK_UNSUBSCRIBE.format(
+                    job_id=job_id
+                )
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                'Выгрузить результаты в excel',
+                callback_data=callback.CALLBACK_EXPORT_RESULTS.format(
+                    job_id=job_id
+                )
+            ),
+        ],
+    ]
+    return InlineKeyboardMarkup(keyboard)

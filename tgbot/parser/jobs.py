@@ -2,12 +2,13 @@ from datetime import datetime, timedelta
 
 import pytz
 from asgiref.sync import sync_to_async
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import Update
 from telegram.ext import Application, CallbackContext, ContextTypes
 
 from .models import Destination, Job, ProductPosition
 from .position_parser import get_position, get_result_text
-from bot.constants import callback, text
+from bot.constants import text
+from bot.keyboards import schedule_parse_keyboard
 from tgbot import settings
 
 
@@ -89,25 +90,7 @@ async def schedule_parse(context: CallbackContext) -> None:
         query=query,
         result=results_text
     )
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                'Отписаться',
-                callback_data=callback.CALLBACK_UNSUBSCRIBE.format(
-                    job_id=context.job.data.pk
-                )
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                'Выгрузить результаты в excel',
-                callback_data=callback.CALLBACK_EXPORT_RESULTS.format(
-                    job_id=context.job.data.pk
-                )
-            ),
-        ],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = schedule_parse_keyboard(context.job.data.pk)
     await context.bot.send_message(
         context.job.user_id,
         text=response_text,
@@ -118,9 +101,12 @@ async def schedule_parse(context: CallbackContext) -> None:
 def start_jobs(application: Application) -> None:
     """автоматический старт подписок на парснг"""
     for db_job in Job.objects.filter(finished=False).all():
+        db_datetime = db_job.start_time.replace(tzinfo=None)
+        timezone = pytz.timezone(settings.TIME_ZONE)
+        localized_datetime = timezone.localize(db_datetime)
         application.job_queue.run_repeating(
             schedule_parse,
-            first=db_job.start_time,
+            first=localized_datetime,
             interval=db_job.interval,
             user_id=db_job.user_id,
             name=str(db_job.pk),
