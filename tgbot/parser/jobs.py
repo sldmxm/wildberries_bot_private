@@ -90,7 +90,7 @@ async def schedule_parse(context: CallbackContext) -> None:
         query=query,
         result=results_text
     )
-    reply_markup = schedule_parse_keyboard(context.job.data.pk)
+    reply_markup = await schedule_parse_keyboard(context.job.data.pk)
     await context.bot.send_message(
         context.job.user_id,
         text=response_text,
