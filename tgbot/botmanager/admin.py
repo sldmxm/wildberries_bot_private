@@ -31,7 +31,6 @@ admin.site.site_header = 'Административная панель бота
 @admin.register(Mailing)
 class MailingAdmin(admin.ModelAdmin):
     """Регистрация модели Mailing в админке"""
-    # change_form_template = 'admin/botmanager/mailing/change_form.html'
 
     list_display = (
         'id',
@@ -40,15 +39,16 @@ class MailingAdmin(admin.ModelAdmin):
         'content',
         'link',
         'image',
-        'file_attache',
-    )
+        'file_attache',)
+    list_display_links = ('id', 'pub_date',)
 
-    search_fields = ('id', 'author', 'content', 'recipients',)
-    list_filter = ('author',)
+    search_fields = ('id', 'author__username', 'content',)
+    list_filter = ('author__username',)
     actions = ['action_add_all_users',
                'action_send_message', ]
 
     def response_change(self, request, obj):
+        """Обработка нажатий кастомных кнопок."""
         if '_add_all_users' in request.POST:
             self.set_recipients(request, obj.id)
             return redirect(reverse('admin:botmanager_mailing_change',
@@ -60,6 +60,12 @@ class MailingAdmin(admin.ModelAdmin):
 
         else:
             return super().response_change(request, obj)
+
+    def get_form(self, request, obj=None, **kwargs):
+        """Значение поля author по умолчанию"""
+        form = super(MailingAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['author'].initial = request.user
+        return form
 
     @async_to_sync
     async def send_messages(self, bot, user_id, message):
