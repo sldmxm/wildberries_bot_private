@@ -233,6 +233,7 @@ async def storehouses_page_3(
     context: ContextTypes.DEFAULT_TYPE
 ):
     """Третья страница с выбором складов"""
+    reply_markup = keyboards.storehouses_keyboard_3()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text.ACCEPTANCE_RATE_START_MESSAGE,
@@ -246,7 +247,7 @@ async def acceptance_rate(
     context: ContextTypes.DEFAULT_TYPE
 ):
     """Обработка коэффициента приемки"""
-    reply_markup = return_to_storehouse_page_1_keyboard()
+    reply_markup = keyboards.return_to_storehouse_page_1_keyboard()
     storehouse = update.callback_query.data.split(':')[1]
     table = await get_rates(storehouse)
     await context.bot.send_message(

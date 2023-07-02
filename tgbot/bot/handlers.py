@@ -107,7 +107,7 @@ def register_conversation_handlers(application: Application) -> None:
             )
         ],
         states={
-            ACCEPTANCE_RATE_CONVERSATION: [
+            menu_application.ACCEPTANCE_RATE_CONVERSATION: [
                 CallbackQueryHandler(
                     menu_application.acceptance_rate,
                     pattern=callback.CALLBACK_STOREHOUSE_PATTERN
