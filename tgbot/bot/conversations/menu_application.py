@@ -60,7 +60,6 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await write_user(update)
     else:
         await query.answer('Вы не подписались на канал.')
-        logger.info(f'Пользователь с chat id {update.effective_chat.id} не подписан на канал Шапкина')
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
