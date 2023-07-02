@@ -1,16 +1,36 @@
 import re
-from parser.acceptance_rate import get_rates
 from parser.jobs import create_job, get_user_jobs, stop_job
 from parser.position_parser import get_position, get_result_text
-from parser.residue_parser import get_residue
 
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 
-from bot import keyboards
-from bot.constants import callback, text
+from bot.constants.callback import (
+    CALLBACK_SCHEDULE_PARSER_PATTERN,
+    CALLBACK_UNSUBSCRIBE_PATTERN,
+    CALLBACK_UPDATE_PATTERN,
+    CALLBACK_EXPORT_RESULTS_PATTERN,
+)
+from bot.constants.text import (
+    ACCEPTANCE_RATE_START_MESSAGE,
+    CANCEL_MESSAGE,
+    HELP_MESSAGE,
+    NO_SUBSCRIPTIONS_MESSAGE,
+    PARSER_MESSAGE,
+    PARSING_START_MESSAGE,
+    PARSING_WAIT_MESSAGE,
+    RESIDUE_PARSER_START_MESSAGE,
+    SUBSCRIBE_MESSAGE,
+    SUBSCRIPTIONS_MESSAGE,
+    UNSUBSCRIBE_MESSAGE,
+)
+from bot.keyboards import (
+    cancel_keyboard,
+    menu_keyboard,
+    position_parse_keyboard,
+)
 from bot.models import Callback
-from bot.utils import check_subscription, write_user, data_export_to_xls
+from bot.utils import check_subscription, data_export_to_xls
 
 
 (
@@ -24,13 +44,12 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка меню"""
     query = update.callback_query
     if await check_subscription(update, context):
-        reply_markup = keyboards.menu_keyboard()
+        reply_markup = menu_keyboard()
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=text.HELP_MESSAGE,
+            text=HELP_MESSAGE,
             reply_markup=reply_markup
         )
-        await write_user(update)
     else:
         await query.answer('Вы не подписались на канал.')
 
@@ -39,7 +58,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка отмены действия"""
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text.CANCEL_MESSAGE
+        text=CANCEL_MESSAGE
     )
     await menu(update, context)
     return ConversationHandler.END
@@ -50,10 +69,10 @@ async def position_parser_help_message(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """обработка вспомогательного сообщения парсера позиций"""
-    reply_markup = keyboards.cancel_keyboard()
+    reply_markup = cancel_keyboard()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text.PARSING_START_MESSAGE,
+        text=PARSING_START_MESSAGE,
         reply_markup=reply_markup
     )
     return POSITION_PARSER_CONVERSATION
@@ -61,19 +80,19 @@ async def position_parser_help_message(
 
 async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера позиций"""
-    match = re.match(text.POSITION_PARSER_PATTERN, update.message.text)
+    match = re.match(r'^(\d+)\s+(.+)$', update.message.text)
     response_text = "Invalid request"
     if match:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=text.PARSING_WAIT_MESSAGE
+            text=PARSING_WAIT_MESSAGE
         )
         article = int(match.group(1))
         query = match.group(2)
         results = await get_position(article, query)
         results_text = await get_result_text(results)
-        reply_markup = await keyboards.position_parse_keyboard(article, query)
-        response_text = text.PARSER_MESSAGE.format(
+        reply_markup = await position_parse_keyboard(article, query)
+        response_text = PARSER_MESSAGE.format(
             article=article,
             query=query,
             result=results_text
@@ -95,15 +114,12 @@ async def update_position_parser(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Обработка обновления позиции парсера"""
-    match = re.match(
-        callback.CALLBACK_UPDATE_PATTERN,
-        update.callback_query.data
-    )
+    match = re.match(CALLBACK_UPDATE_PATTERN, update.callback_query.data)
     callback_id = int(match.group(1))
     callback_data = await Callback.objects.aget(pk=callback_id)
     results = await get_position(callback_data.article, callback_data.query)
     results_text = await get_result_text(results)
-    response_text = text.PARSER_MESSAGE.format(
+    response_text = PARSER_MESSAGE.format(
         article=callback_data.article,
         query=callback_data.query,
         result=results_text
@@ -129,7 +145,7 @@ async def callback_subscribe_position_parser(
 ):
     """Обработка подписки на позицию парсера"""
     match = re.match(
-        callback.CALLBACK_SCHEDULE_PARSER_PATTERN,
+        CALLBACK_SCHEDULE_PARSER_PATTERN,
         update.callback_query.data
     )
     callback_id = int(match.group(1))
@@ -144,7 +160,7 @@ async def callback_subscribe_position_parser(
     )
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text.SUBSCRIBE_MESSAGE
+        text=SUBSCRIBE_MESSAGE
     )
     return POSITION_PARSER_CONVERSATION
 
@@ -154,10 +170,10 @@ async def residue_parser_help_message(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Обработка вспомогательного сообщения парсера остатков"""
-    reply_markup = keyboards.cancel_keyboard()
+    reply_markup = cancel_keyboard()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text.RESIDUE_PARSER_START_MESSAGE,
+        text=RESIDUE_PARSER_START_MESSAGE,
         reply_markup=reply_markup
     )
     return RESIDUE_PARSER_CONVERSATION
@@ -165,95 +181,32 @@ async def residue_parser_help_message(
 
 async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера остатков"""
-    match = re.match(text.RESIDUE_PARSER_PATTERN, update.message.text)
-    article = int(match.group(1))
-    parser_data = await get_residue(article)
-    if not parser_data:
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=text.ERROR_MESSAGE
-        )
-        return RESIDUE_PARSER_CONVERSATION
-    residue_in_storehouses, residual_sizes = parser_data
-    residue_in_storehouses_text = '\n'.join(
-        [
-            text.RESIDUE_PARSER_COUNT.format(name=city, count=count)
-            for city, count in sorted(
-                residue_in_storehouses.items(), key=lambda item: -item[1]
-            )
-        ]
-    )
-    residual_sizes_text = '\n'.join(
-        [
-            text.RESIDUE_PARSER_COUNT.format(name=size, count=count)
-            for size, count in sorted(residual_sizes.items())
-        ]
-    )
-    response_text = text.RESIDUE_PARSER_MESSAGE.format(
-        residue_in_storehouses=residue_in_storehouses_text,
-        residual_sizes=residual_sizes_text
-    )
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=response_text
+    await context.bot.answer_callback_query(
+        update.callback_query.id,
+        'В разработке'
     )
     return RESIDUE_PARSER_CONVERSATION
 
 
-async def storehouses_page_1(
+async def acceptance_rate_help_message(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
-    """Первая страница с выбором складов"""
-    reply_markup = keyboards.storehouses_keyboard_1()
+    """Обработка вспомогательного сообщения коэффициента приемки"""
+    reply_markup = cancel_keyboard()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text.ACCEPTANCE_RATE_START_MESSAGE,
+        text=ACCEPTANCE_RATE_START_MESSAGE,
         reply_markup=reply_markup
     )
     return ACCEPTANCE_RATE_CONVERSATION
 
 
-async def storehouses_page_2(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
-    """Вторая страница с выбором складов"""
-    reply_markup = keyboards.storehouses_keyboard_2()
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text.ACCEPTANCE_RATE_START_MESSAGE,
-        reply_markup=reply_markup
-    )
-    return ACCEPTANCE_RATE_CONVERSATION
-
-
-async def storehouses_page_3(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
-    """Третья страница с выбором складов"""
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text.ACCEPTANCE_RATE_START_MESSAGE,
-        reply_markup=reply_markup
-    )
-    return ACCEPTANCE_RATE_CONVERSATION
-
-
-async def acceptance_rate(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
+async def acceptance_rate(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка коэффициента приемки"""
-    reply_markup = return_to_storehouse_page_1_keyboard()
-    storehouse = update.callback_query.data.split(':')[1]
-    table = await get_rates(storehouse)
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=f'{storehouse}:\n<pre>{table}</pre>',
-        parse_mode='HTML',
-        reply_markup=reply_markup,
+    await context.bot.answer_callback_query(
+        update.callback_query.id,
+        'В разработке'
     )
     return ACCEPTANCE_RATE_CONVERSATION
 
@@ -266,9 +219,9 @@ async def user_subscriptions(
     jobs = await get_user_jobs(update, context)
     if jobs:
         results = '\n'.join([f'{job.article} {job.query}' for job in jobs])
-        response_text = text.SUBSCRIPTIONS_MESSAGE.format(results=results)
+        response_text = SUBSCRIPTIONS_MESSAGE.format(results=results)
     else:
-        response_text = text.NO_SUBSCRIPTIONS_MESSAGE
+        response_text = NO_SUBSCRIPTIONS_MESSAGE
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=response_text
@@ -278,7 +231,7 @@ async def user_subscriptions(
 async def export_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка выгруски результатов"""
     match = re.match(
-        callback.CALLBACK_EXPORT_RESULTS_PATTERN, update.callback_query.data
+        CALLBACK_EXPORT_RESULTS_PATTERN, update.callback_query.data
     )
     job_id = int(match.group(1))
     file = await data_export_to_xls(job_id=job_id)
@@ -294,13 +247,10 @@ async def unsubscribe(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Обработка отписки на позицию"""
-    match = re.match(
-        callback.CALLBACK_UNSUBSCRIBE_PATTERN,
-        update.callback_query.data
-    )
+    match = re.match(CALLBACK_UNSUBSCRIBE_PATTERN, update.callback_query.data)
     job_id = int(match.group(1))
     await stop_job(update=update, context=context, job_id=job_id)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text.UNSUBSCRIBE_MESSAGE
+        text=UNSUBSCRIBE_MESSAGE
     )
