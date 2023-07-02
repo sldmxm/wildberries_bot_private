@@ -45,7 +45,8 @@ class MailingAdmin(admin.ModelAdmin):
 
     search_fields = ('id', 'author', 'content', 'recipients',)
     list_filter = ('author',)
-    actions = ['add_all_users', ]
+    actions = ['action_add_all_users',
+               'action_send_message', ]
 
     def response_change(self, request, obj):
         if '_add_all_users' in request.POST:
@@ -79,16 +80,22 @@ class MailingAdmin(admin.ModelAdmin):
             await bot.send_document(user_id, document, write_timeout=10)
 
     @admin.action(description='Добавить всех пользователей в рассылку')
-    def add_all_users(self, request, queryset):
+    def action_add_all_users(self, request, queryset):
         """Action для добавления всех подписчиков бота в адресаты сообщения."""
         users = TelegramUser.objects.all()
         for messge in queryset:
             for user in users:
                 messge.recipients.add(user)
 
+    @admin.action(description='Отправить рассылку в Telegram')
+    def action_send_message(self, request, queryset):
+        """Action для рассылки в Telegram."""
+        for messge in queryset:
+            self.send_message(request, messge.id)
+
     def set_recipients(self, request, object_id):
         """Добавляет пользователей по нажатию кнопки."""
-        self.add_all_users(
+        self.action_add_all_users(
             request,
             queryset=Mailing.objects.filter(pk=object_id))
 
@@ -99,7 +106,8 @@ class MailingAdmin(admin.ModelAdmin):
 
         for recipient in message.recipients.all():
             if message.image:
-                self.send_photo(bot, recipient.telegram_id, message.image)
+                self.send_photo(bot, recipient.telegram_id,
+                                open(str(message.image), 'rb'))
             message_text = '\n'.join(
                 [message.content, message.link]
                 ) if message.link else message.content

@@ -64,12 +64,12 @@ class Mailing(models.Model):
 
     image = models.ImageField(
         verbose_name='Прикрепленное изображение',
-        upload_to='tgbot/botmanager/images/',
+        upload_to='tgbot/botmanager/static/images/',
         blank=True,)
 
     file_attache = models.FileField(
         verbose_name='Прикрепленный файл',
-        upload_to='tgbot/botmanager/files/',
+        upload_to='tgbot/botmanager/static/files/',
         blank=True,)
 
     recipients = models.ManyToManyField(
@@ -84,8 +84,8 @@ class Mailing(models.Model):
 
     class Meta:
         ordering = ('-pub_date',)
-        verbose_name = 'Рассылка'
-        verbose_name_plural = 'Рассылки'
+        verbose_name = 'Рассылку'
+        verbose_name_plural = 'Рассылки Telegram'
 
     def __str__(self):
         return f'{self.pub_date}: ({self.author}) - {self.content[:15]}'

@@ -2,16 +2,7 @@ from datetime import date, datetime, time, timedelta
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from bot.constants.callback import (
-    CALLBACK_ACCEPTANCE_RATE,
-    CALLBACK_CANCEL,
-    CALLBACK_CHECK_SUBSCRIBE,
-    CALLBACK_POSITION_PARSER,
-    CALLBACK_RESIDUE_PARSER,
-    CALLBACK_SCHEDULE_PARSER,
-    CALLBACK_UPDATE,
-    CALLBACK_USER_SUBSCRIPTIONS,
-)
+from bot.constants import callback
 from bot.models import Callback
 
 
@@ -20,7 +11,7 @@ def start_keyboard():
         [
             InlineKeyboardButton(
                 'Я подписался, запустить бота',
-                callback_data=CALLBACK_CHECK_SUBSCRIBE
+                callback_data=callback.CALLBACK_CHECK_SUBSCRIBE
             )
         ]
     ]
@@ -32,25 +23,25 @@ def menu_keyboard():
         [
             InlineKeyboardButton(
                 'Парсер позиций',
-                callback_data=CALLBACK_POSITION_PARSER
+                callback_data=callback.CALLBACK_POSITION_PARSER
             ),
         ],
         [
             InlineKeyboardButton(
                 'Парсер остатков',
-                callback_data=CALLBACK_RESIDUE_PARSER
+                callback_data=callback.CALLBACK_RESIDUE_PARSER
             )
         ],
         [
             InlineKeyboardButton(
                 'Отслеживание коэффициента приемки WB',
-                callback_data=CALLBACK_ACCEPTANCE_RATE
+                callback_data=callback.CALLBACK_ACCEPTANCE_RATE
             )
         ],
         [
             InlineKeyboardButton(
                 'Мои подписки на позиции',
-                callback_data=CALLBACK_USER_SUBSCRIPTIONS
+                callback_data=callback.CALLBACK_USER_SUBSCRIPTIONS
             )
         ],
     ]
@@ -62,7 +53,7 @@ def cancel_keyboard():
         [
             InlineKeyboardButton(
                 'Отмена',
-                callback_data=CALLBACK_CANCEL
+                callback_data=callback.CALLBACK_CANCEL
             ),
         ]
     ]
@@ -95,7 +86,7 @@ async def position_parse_keyboard(article: int, query: str):
         [
             InlineKeyboardButton(
                 'Обновить',
-                callback_data=CALLBACK_UPDATE.format(
+                callback_data=callback.CALLBACK_UPDATE.format(
                     callback_id=callback_update.pk
                 )
             ),
@@ -103,7 +94,7 @@ async def position_parse_keyboard(article: int, query: str):
         [
             InlineKeyboardButton(
                 'Результаты в 9:00. Подписаться',
-                callback_data=CALLBACK_SCHEDULE_PARSER.format(
+                callback_data=callback.CALLBACK_SCHEDULE_PARSER.format(
                     callback_id=callback_daily.pk
                 )
             )
@@ -111,19 +102,19 @@ async def position_parse_keyboard(article: int, query: str):
         [
             InlineKeyboardButton(
                 '1 час',
-                callback_data=CALLBACK_SCHEDULE_PARSER.format(
+                callback_data=callback.CALLBACK_SCHEDULE_PARSER.format(
                     callback_id=callback_hourly[1].pk
                 )
             ),
             InlineKeyboardButton(
                 '6 часов',
-                callback_data=CALLBACK_SCHEDULE_PARSER.format(
+                callback_data=callback.CALLBACK_SCHEDULE_PARSER.format(
                     callback_id=callback_hourly[6].pk
                 )
             ),
             InlineKeyboardButton(
                 '12 часов',
-                callback_data=CALLBACK_SCHEDULE_PARSER.format(
+                callback_data=callback.CALLBACK_SCHEDULE_PARSER.format(
                     callback_id=callback_hourly[12].pk
                 )
             )
