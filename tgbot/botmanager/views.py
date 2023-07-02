@@ -31,6 +31,8 @@ def user_statistics(request):
         'users_count': users_count,
         'user_actions': user_actions,
         'datetime_actions': datetime_actions,
+        'all_requests': all_requests,
+        'all_users': all_users,
         'requests_for_user': requests_for_user
 
     }

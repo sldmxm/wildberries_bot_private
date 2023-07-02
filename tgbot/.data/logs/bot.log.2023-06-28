@@ -1,5 +1,0 @@
-2023-06-28 21:51:17,548, INFO, django.utils.autoreload, Watching for file changes with StatReloader
-2023-06-28 21:51:28,038, INFO, django.utils.autoreload, D:\Dev\Wildberries\wildberries_bot_team_1\tgbot\tgbot\settings.py changed, reloading.
-2023-06-28 22:18:55,584, INFO, django.utils.autoreload, Watching for file changes with StatReloader
-2023-06-28 22:19:59,826, INFO, django.utils.autoreload, D:\Dev\Wildberries\wildberries_bot_team_1\tgbot\botmanager\admin.py changed, reloading.
-2023-06-28 22:20:00,255, INFO, django.utils.autoreload, Watching for file changes with StatReloader
