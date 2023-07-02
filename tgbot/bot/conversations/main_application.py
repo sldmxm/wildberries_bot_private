@@ -1,5 +1,4 @@
 from telegram.ext import ApplicationBuilder
-from tgbot.settings import logger
 
 from .command_application import setup_my_commands
 from bot.core.settings import settings
@@ -17,4 +16,3 @@ def main():
     register_conversation_handlers(application)
     start_jobs(application)
     application.run_polling()
-    logger.info('Бот запущен')

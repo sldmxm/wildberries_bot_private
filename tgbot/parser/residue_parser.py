@@ -6,7 +6,6 @@ from asgiref.sync import sync_to_async
 
 from .constants import RESIDUE_PARSING_LINK
 from .models import Storehouse
-from tgbot.settings import logger
 
 
 @sync_to_async
@@ -26,8 +25,7 @@ async def get_residue(article):
             response_data = response_json.get('data')
             response_product = response_data.get('products')[0]
             response_sizes = response_product.get('sizes')
-        except AttributeError and IndexError as e:
-            logger.error(f'Произошла ошибка: {e}')
+        except AttributeError and IndexError:
             return False
         residual_sizes = defaultdict(int)
         residue_in_storehouses = defaultdict(int)
@@ -36,8 +34,7 @@ async def get_residue(article):
             try:
                 size_name = size.get('name')
                 stocks = size.get('stocks')
-            except AttributeError as e:
-                logger.error(f'Произошла ошибка: {e}')
+            except AttributeError:
                 continue
             for stock in stocks:
                 count = stock.get('qty', 0)
@@ -46,8 +43,7 @@ async def get_residue(article):
                     storehouse_name = storehouses_names.get(wh)
                     if storehouse_name is not None:
                         residue_in_storehouses[storehouse_name] += count
-                except AttributeError as e:
-                    logger.error(f'Произошла ошибка: {e}')
+                except AttributeError:
                     pass
                 residual_sizes[size_name] += count
         return residue_in_storehouses, residual_sizes

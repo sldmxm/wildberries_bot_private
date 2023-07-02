@@ -5,6 +5,8 @@ class Settings(BaseSettings):
     telegram_token: str
     debug: bool = False
     channel_username: str
+    log_filename: str = 'bot.log'
+    log_level: str = 'INFO'
 
     class Config:
         env_file = '.env'

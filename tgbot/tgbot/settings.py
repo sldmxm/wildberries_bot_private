@@ -1,10 +1,7 @@
-import logging.config
-import logging.handlers
 import os
-import sys
 
 from pathlib import Path
-
+from bot.core.settings import settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,44 +21,8 @@ ALLOWED_HOSTS = ['*']
 # Определение пути к файлу логов
 LOG_PATH = BASE_DIR / '.data' / 'logs'
 LOG_PATH.mkdir(parents=True, exist_ok=True)
-LOG_FILENAME = LOG_PATH / 'bot.log'
+LOG_FILENAME = LOG_PATH / settings.log_filename
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file_handler': {
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': LOG_FILENAME,
-            'when': 'D',
-            'interval': 1,
-            'backupCount': 60,
-            'formatter': 'default_formatter'
-        },
-        'console_handler': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'default_formatter',
-            'stream': sys.stdout
-        }
-    },
-    'loggers': {
-        '': {
-            'handlers': ['file_handler', 'console_handler'],
-            'level': 'INFO',
-            'propagate': True
-        }
-    },
-    'formatters': {
-        'default_formatter': {
-            'format': '%(asctime)s, %(levelname)s, %(name)s, %(message)s'
-        }
-    }
-}
-
-# Загрузка конфигурации логирования
-logging.config.dictConfig(LOGGING)
-
-logger = logging.getLogger('tgbot')
 
 # Application definition
 
