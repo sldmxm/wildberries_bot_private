@@ -60,3 +60,12 @@ SUBSCRIBE_MESSAGE = 'Вы подписались'
 UNSUBSCRIBE_MESSAGE = 'Вы отписались'
 NO_SUBSCRIPTIONS_MESSAGE = 'У вас нет подписок'
 ERROR_MESSAGE = 'Извините, у меня не получилось обработать запрос.'
+
+LOG_MESSAGE_USER_SIGNED_UP = 'Пользователь {username}, чат ID {chat_id} подписался на канал и запустил бота'
+LOG_MESSAGE_USER_START_PARSING = 'Пользователь {username}, чат ID {chat_id} ищет позицию товара {position}'
+LOG_MESSAGE_WRONG_ARTICLE = 'Пользователь {username}, чат ID {chat_id} ввёл в парсере неверное название товара'
+LOG_MESSAGE_USER_UPDATE_PARSING = 'Пользователь {username}, чат ID {chat_id} сделал запрос на обновление позиции товара {position}' # noqa
+LOG_MESSAGE_USER_SUBSCRIPTION_CREATED = 'Пользователь {username}, чат ID {chat_id} создал подписку на  товар {position}'
+LOG_MESSAGE_RESIDUE_REQUEST = 'Пользователь {username}, чат ID {chat_id} сделал запрос остатков товара {position}'
+LOG_MESSAGE_DOWNLOAD = 'Пользователь {username}, чат ID {chat_id} сделал запрос на выгрузку результатов'
+LOG_MESSAGE_UNSUBSCRIBE = 'Пользователь {username}, чат ID {chat_id} отписался от товара {position}'

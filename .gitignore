@@ -164,6 +164,7 @@ cython_debug/
 
 # Django migrations
 migrations/
+logs/
 
 # Static
 static/
