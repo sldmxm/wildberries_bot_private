@@ -101,12 +101,9 @@ async def schedule_parse(context: CallbackContext) -> None:
 def start_jobs(application: Application) -> None:
     """автоматический старт подписок на парснг"""
     for db_job in Job.objects.filter(finished=False).all():
-        db_datetime = db_job.start_time.replace(tzinfo=None)
-        timezone = pytz.timezone(settings.TIME_ZONE)
-        localized_datetime = timezone.localize(db_datetime)
         application.job_queue.run_repeating(
             schedule_parse,
-            first=localized_datetime,
+            first=db_job.local_start_time,
             interval=db_job.interval,
             user_id=db_job.user_id,
             name=str(db_job.pk),
