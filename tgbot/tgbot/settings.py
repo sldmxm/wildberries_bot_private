@@ -1,7 +1,6 @@
 import os
 
 from pathlib import Path
-from bot.core.settings import settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -16,12 +15,6 @@ SECRET_KEY = os.getenv('SECRET_KEY'),
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-
-# Определение пути к файлу логов
-LOG_PATH = BASE_DIR / '.data' / 'logs'
-LOG_PATH.mkdir(parents=True, exist_ok=True)
-LOG_FILENAME = LOG_PATH / settings.log_filename
 
 
 # Application definition
