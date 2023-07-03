@@ -63,7 +63,7 @@ async def position_parser_help_message(
 async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера позиций"""
     match = re.match(text.POSITION_PARSER_PATTERN, update.message.text)
-    logger.info(LOG_MESSAGE_USER_START_PARSING.format(
+    logger.info(text.LOG_MESSAGE_USER_START_PARSING.format(
                 username=update.effective_chat.username,
                 chat_id=update.effective_chat.id,
                 position=int(match.group(1))))
@@ -93,7 +93,7 @@ async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
         chat_id=update.effective_chat.id,
         text=response_text
     )
-    logger.info(LOG_MESSAGE_WRONG_ARTICLE.format(
+    logger.info(text.LOG_MESSAGE_WRONG_ARTICLE.format(
                 username=update.effective_chat.username,
                 chat_id=update.effective_chat.id))
 
@@ -107,7 +107,7 @@ async def update_position_parser(
         callback.CALLBACK_UPDATE_PATTERN,
         update.callback_query.data
     )
-    logger.info(LOG_MESSAGE_USER_UPDATE_PARSING.format(
+    logger.info(text.LOG_MESSAGE_USER_UPDATE_PARSING.format(
                 username=update.effective_chat.username,
                 chat_id=update.effective_chat.id,
                 position=int(match.group(1))))
@@ -146,7 +146,7 @@ async def callback_subscribe_position_parser(
     )
     callback_id = int(match.group(1))
     callback_data = await Callback.objects.aget(pk=callback_id)
-    logger.info(LOG_MESSAGE_USER_SUBSCRIPTION_CREATED.format(
+    logger.info(text.LOG_MESSAGE_USER_SUBSCRIPTION_CREATED.format(
                 username=update.effective_chat.username,
                 chat_id=update.effective_chat.id,
                 position=int(match.group(1))))
@@ -183,7 +183,7 @@ async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера остатков"""
     match = re.match(text.RESIDUE_PARSER_PATTERN, update.message.text)
     article = int(match.group(1))
-    logger.info(LOG_MESSAGE_RESIDUE_REQUEST.format(
+    logger.info(text.LOG_MESSAGE_RESIDUE_REQUEST.format(
                 username=update.effective_chat.username,
                 chat_id=update.effective_chat.id,
                 position=int(match.group(1))))
@@ -301,7 +301,7 @@ async def export_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
     match = re.match(
         callback.CALLBACK_EXPORT_RESULTS_PATTERN, update.callback_query.data
     )
-    logger.info(LOG_MESSAGE_DOWNLOAD.format(
+    logger.info(text.LOG_MESSAGE_DOWNLOAD.format(
                 username=update.effective_chat.username,
                 chat_id=update.effective_chat.id))
     job_id = int(match.group(1))
@@ -323,7 +323,7 @@ async def unsubscribe(
         update.callback_query.data
     )
     job_id = int(match.group(1))
-    logger.info(LOG_MESSAGE_UNSUBSCRIBE.format(
+    logger.info(text.LOG_MESSAGE_UNSUBSCRIBE.format(
                 username=update.effective_chat.username,
                 chat_id=update.effective_chat.id,
                 position=job_id))
