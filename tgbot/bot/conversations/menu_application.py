@@ -50,13 +50,17 @@ async def position_parser_help_message(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """обработка вспомогательного сообщения парсера позиций"""
-    reply_markup = keyboards.cancel_keyboard()
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text.PARSING_START_MESSAGE,
-        reply_markup=reply_markup
-    )
-    return POSITION_PARSER_CONVERSATION
+    if await check_subscription(update, context):
+        reply_markup = keyboards.cancel_keyboard()
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=text.PARSING_START_MESSAGE,
+            reply_markup=reply_markup
+        )
+        return POSITION_PARSER_CONVERSATION
+    else:
+        query = update.callback_query
+        await query.answer('Вы не подписались на канал.')
 
 
 async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -154,13 +158,17 @@ async def residue_parser_help_message(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Обработка вспомогательного сообщения парсера остатков"""
-    reply_markup = keyboards.cancel_keyboard()
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text.RESIDUE_PARSER_START_MESSAGE,
-        reply_markup=reply_markup
-    )
-    return RESIDUE_PARSER_CONVERSATION
+    if await check_subscription(update, context):
+        reply_markup = keyboards.cancel_keyboard()
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=text.RESIDUE_PARSER_START_MESSAGE,
+            reply_markup=reply_markup
+        )
+        return RESIDUE_PARSER_CONVERSATION
+    else:
+        query = update.callback_query
+        await query.answer('Вы не подписались на канал.')
 
 
 async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -205,13 +213,17 @@ async def storehouses_page_1(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Первая страница с выбором складов"""
-    reply_markup = keyboards.storehouses_keyboard_1()
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text.ACCEPTANCE_RATE_START_MESSAGE,
-        reply_markup=reply_markup
-    )
-    return ACCEPTANCE_RATE_CONVERSATION
+    if await check_subscription(update, context):
+        reply_markup = keyboards.storehouses_keyboard_1()
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=text.ACCEPTANCE_RATE_START_MESSAGE,
+            reply_markup=reply_markup
+        )
+        return ACCEPTANCE_RATE_CONVERSATION
+    else:
+        query = update.callback_query
+        await query.answer('Вы не подписались на канал.')
 
 
 async def storehouses_page_2(
@@ -264,16 +276,20 @@ async def user_subscriptions(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Обработка подписок на позиции"""
-    jobs = await get_user_jobs(update, context)
-    if jobs:
-        results = '\n'.join([f'{job.article} {job.query}' for job in jobs])
-        response_text = text.SUBSCRIPTIONS_MESSAGE.format(results=results)
+    if await check_subscription(update, context):
+        jobs = await get_user_jobs(update, context)
+        if jobs:
+            results = '\n'.join([f'{job.article} {job.query}' for job in jobs])
+            response_text = text.SUBSCRIPTIONS_MESSAGE.format(results=results)
+        else:
+            response_text = text.NO_SUBSCRIPTIONS_MESSAGE
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=response_text
+        )
     else:
-        response_text = text.NO_SUBSCRIPTIONS_MESSAGE
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=response_text
-    )
+        query = update.callback_query
+        await query.answer('Вы не подписались на канал.')
 
 
 async def export_results(update: Update, context: ContextTypes.DEFAULT_TYPE):

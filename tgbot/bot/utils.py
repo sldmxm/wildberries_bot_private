@@ -15,13 +15,16 @@ from parser.models import Job, ProductPosition
 REPORT_DAYS = 3
 
 
-async def write_user(update: Update):
+@sync_to_async
+def write_user(update: Update):
     """Запись данных пользователя в БД заявок."""
-    await TelegramUser(
-        username=update.effective_chat.username,
-        first_name=update.effective_chat.first_name,
-        telegram_id=update.effective_chat.id,
-    ).asave()
+    if not TelegramUser.objects.filter(
+        telegram_id=update.effective_chat.id).exists():
+        TelegramUser(
+            username=update.effective_chat.username,
+            first_name=update.effective_chat.first_name,
+            telegram_id=update.effective_chat.id,
+        ).save()
 
 
 async def check_subscription(
