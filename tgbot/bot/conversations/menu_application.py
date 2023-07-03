@@ -3,22 +3,15 @@ from parser.acceptance_rate import get_rates
 from parser.jobs import create_job, get_user_jobs, stop_job
 from parser.position_parser import get_position, get_result_text
 from parser.residue_parser import get_residue
-from bot.core.logging import logger
 
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 
 from bot import keyboards
-from bot.constants import callback, text
+from bot.constants import callback, text, states
+from bot.core.logging import logger
 from bot.models import Callback
-from bot.utils import check_subscription, write_user, data_export_to_xls
-
-
-(
-    POSITION_PARSER_CONVERSATION,
-    RESIDUE_PARSER_CONVERSATION,
-    ACCEPTANCE_RATE_CONVERSATION
-) = range(3)
+from bot.utils import check_subscription, data_export_to_xls, write_user
 
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -58,7 +51,7 @@ async def position_parser_help_message(
             text=text.PARSING_START_MESSAGE,
             reply_markup=reply_markup
         )
-        return POSITION_PARSER_CONVERSATION
+        return states.POSITION_PARSER_CONVERSATION
     else:
         query = update.callback_query
         await query.answer('Вы не подписались на канал.')
@@ -127,7 +120,7 @@ async def update_position_parser(
     if response_text != update.callback_query.message.text:
         await context.bot.answer_callback_query(update.callback_query.id,
                                                 'Ничего не изменилось')
-        return POSITION_PARSER_CONVERSATION
+        return states.POSITION_PARSER_CONVERSATION
     await context.bot.edit_message_text(
         response_text,
         chat_id=update.effective_chat.id,
@@ -136,7 +129,7 @@ async def update_position_parser(
     )
     await context.bot.answer_callback_query(update.callback_query.id,
                                             'Обновлено')
-    return POSITION_PARSER_CONVERSATION
+    return states.POSITION_PARSER_CONVERSATION
 
 
 async def callback_subscribe_position_parser(
@@ -166,7 +159,7 @@ async def callback_subscribe_position_parser(
         chat_id=update.effective_chat.id,
         text=text.SUBSCRIBE_MESSAGE
     )
-    return POSITION_PARSER_CONVERSATION
+    return states.POSITION_PARSER_CONVERSATION
 
 
 async def residue_parser_help_message(
@@ -181,7 +174,7 @@ async def residue_parser_help_message(
             text=text.RESIDUE_PARSER_START_MESSAGE,
             reply_markup=reply_markup
         )
-        return RESIDUE_PARSER_CONVERSATION
+        return states.RESIDUE_PARSER_CONVERSATION
     else:
         query = update.callback_query
         await query.answer('Вы не подписались на канал.')
@@ -201,7 +194,7 @@ async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
             chat_id=update.effective_chat.id,
             text=text.ERROR_MESSAGE
         )
-        return RESIDUE_PARSER_CONVERSATION
+        return states.RESIDUE_PARSER_CONVERSATION
     residue_in_storehouses, residual_sizes = parser_data
     residue_in_storehouses_text = '\n'.join(
         [
@@ -225,7 +218,7 @@ async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
         chat_id=update.effective_chat.id,
         text=response_text
     )
-    return RESIDUE_PARSER_CONVERSATION
+    return states.RESIDUE_PARSER_CONVERSATION
 
 
 async def storehouses_page_1(
@@ -240,7 +233,7 @@ async def storehouses_page_1(
             text=text.ACCEPTANCE_RATE_START_MESSAGE,
             reply_markup=reply_markup
         )
-        return ACCEPTANCE_RATE_CONVERSATION
+        return states.ACCEPTANCE_RATE_CONVERSATION
     else:
         query = update.callback_query
         await query.answer('Вы не подписались на канал.')
@@ -257,7 +250,7 @@ async def storehouses_page_2(
         text=text.ACCEPTANCE_RATE_START_MESSAGE,
         reply_markup=reply_markup
     )
-    return ACCEPTANCE_RATE_CONVERSATION
+    return states.ACCEPTANCE_RATE_CONVERSATION
 
 
 async def storehouses_page_3(
@@ -271,7 +264,7 @@ async def storehouses_page_3(
         text=text.ACCEPTANCE_RATE_START_MESSAGE,
         reply_markup=reply_markup
     )
-    return ACCEPTANCE_RATE_CONVERSATION
+    return states.ACCEPTANCE_RATE_CONVERSATION
 
 
 async def acceptance_rate(
@@ -288,7 +281,7 @@ async def acceptance_rate(
         parse_mode='HTML',
         reply_markup=reply_markup,
     )
-    return ACCEPTANCE_RATE_CONVERSATION
+    return states.ACCEPTANCE_RATE_CONVERSATION
 
 
 async def user_subscriptions(

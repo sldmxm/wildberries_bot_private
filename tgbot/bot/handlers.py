@@ -7,7 +7,7 @@ from telegram.ext import (
     filters,
 )
 
-from bot.constants import callback, text
+from bot.constants import callback, text, states
 from bot.conversations import command_application, menu_application
 
 
@@ -49,7 +49,7 @@ def register_conversation_handlers(application: Application) -> None:
             )
         ],
         states={
-            menu_application.POSITION_PARSER_CONVERSATION: [
+            states.POSITION_PARSER_CONVERSATION: [
                 MessageHandler(
                     filters.Regex(text.POSITION_PARSER_PATTERN),
                     menu_application.position_parser
@@ -82,7 +82,7 @@ def register_conversation_handlers(application: Application) -> None:
             )
         ],
         states={
-            menu_application.RESIDUE_PARSER_CONVERSATION: [
+            states.RESIDUE_PARSER_CONVERSATION: [
                 MessageHandler(
                     filters.Regex(text.RESIDUE_PARSER_PATTERN),
                     menu_application.residue_parser
@@ -107,7 +107,7 @@ def register_conversation_handlers(application: Application) -> None:
             )
         ],
         states={
-            menu_application.ACCEPTANCE_RATE_CONVERSATION: [
+            states.ACCEPTANCE_RATE_CONVERSATION: [
                 CallbackQueryHandler(
                     menu_application.acceptance_rate,
                     pattern=callback.CALLBACK_STOREHOUSE_PATTERN
