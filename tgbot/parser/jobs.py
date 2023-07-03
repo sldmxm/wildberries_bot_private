@@ -6,11 +6,7 @@ from telegram.ext import Application, CallbackContext, ContextTypes
 
 from .models import Destination, Job, ProductPosition
 from .position_parser import get_position, get_result_text
-from bot.constants.callback import (
-    CALLBACK_EXPORT_RESULTS,
-    CALLBACK_UNSUBSCRIBE,
-)
-from bot.constants.text import PARSER_MESSAGE
+from bot.constants import callback, text
 
 
 async def create_job(
@@ -80,7 +76,7 @@ async def schedule_parse(context: CallbackContext) -> None:
             destination=destination
         )
     results_text = await get_result_text(results)
-    response_text = PARSER_MESSAGE.format(
+    response_text = text.PARSER_MESSAGE.format(
         article=article,
         query=query,
         result=results_text
@@ -89,7 +85,7 @@ async def schedule_parse(context: CallbackContext) -> None:
         [
             InlineKeyboardButton(
                 'Отписаться',
-                callback_data=CALLBACK_UNSUBSCRIBE.format(
+                callback_data=callback.CALLBACK_UNSUBSCRIBE.format(
                     job_id=context.job.data.pk
                 )
             ),
@@ -97,7 +93,7 @@ async def schedule_parse(context: CallbackContext) -> None:
         [
             InlineKeyboardButton(
                 'Выгрузить результаты в excel',
-                callback_data=CALLBACK_EXPORT_RESULTS.format(
+                callback_data=callback.CALLBACK_EXPORT_RESULTS.format(
                     job_id=context.job.data.pk
                 )
             ),

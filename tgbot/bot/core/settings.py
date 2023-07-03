@@ -5,6 +5,9 @@ class Settings(BaseSettings):
     telegram_token: str
     debug: bool = False
     channel_username: str
+    webhook_url: str = None
+    webhook_port: int = 8443
+    webhook_local_link: str = '0.0.0.0'
     log_filename: str = 'bot.log'
     log_level: str = 'INFO'
 

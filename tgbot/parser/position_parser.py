@@ -2,20 +2,11 @@ import asyncio
 import json
 from itertools import chain
 from math import ceil
+from parser import constants
 
 from .clientsession import ClientSession
-from .constants import (
-    ADVERT_PRODUCTS_LINK,
-    PAGE_PARSING_LINK,
-    TOTAL_PRODUCTS_LINK,
-)
 from .models import Destination
-from bot.constants.text import (
-    ADVERT_PRODUCT_POSITION_MESSAGE,
-    PRODUCT_POSITION_MESSAGE,
-    PRODUCT_POSITION_NOT_FOUND_MESSAGE,
-    PRODUCT_POSITION_SCHEDULE_MESSAGE,
-)
+from bot.constants import text
 
 
 loop = asyncio.get_event_loop()
@@ -24,7 +15,7 @@ loop = asyncio.get_event_loop()
 async def get_advert_position(article: int, query: str) -> int:
     """Проверка, является ли товар реклманым,
     если реклмнаый - возврщает его пзицию, иначе -1"""
-    link = ADVERT_PRODUCTS_LINK.format(query=query)
+    link = constants.ADVERT_PRODUCTS_LINK.format(query=query)
     async with ClientSession() as session:
         response_data = await session.get_data(link)
     response_json = json.loads(response_data)
@@ -44,7 +35,10 @@ async def get_advert_position(article: int, query: str) -> int:
 
 async def get_total_positions(query: str, destination: int) -> int:
     """получение общего количества товаров по запросу"""
-    link = TOTAL_PRODUCTS_LINK.format(query=query, destination=destination)
+    link = constants.TOTAL_PRODUCTS_LINK.format(
+        query=query,
+        destination=destination
+    )
     async with ClientSession() as session:
         response_data = await session.get_data(link)
     response_json = json.loads(response_data)
@@ -61,7 +55,7 @@ async def parse_page(
         result: dict
 ) -> None:
     """парсинг страниц с товаром"""
-    link = PAGE_PARSING_LINK.format(
+    link = constants.PAGE_PARSING_LINK.format(
         destination=destination,
         page=str(page),
         query=query
@@ -123,7 +117,7 @@ async def get_result_text(results: dict) -> str:
     """создание текстового сообщения с положением товаров"""
     is_advert = list(results.values())[0].get('is_advert', False)
     if is_advert:
-        result_text = ADVERT_PRODUCT_POSITION_MESSAGE
+        result_text = text.ADVERT_PRODUCT_POSITION_MESSAGE
     else:
         result_text = ''
     async for destination in Destination.objects.all():
@@ -132,13 +126,13 @@ async def get_result_text(results: dict) -> str:
         position = result.get('position', None)
         prev_position = result.get('prev_position', None)
         if position is None or page is None:
-            result_text += PRODUCT_POSITION_NOT_FOUND_MESSAGE.format(
+            result_text += text.PRODUCT_POSITION_NOT_FOUND_MESSAGE.format(
                 city=destination.city
             )
             continue
         total_position = (page - 1) * 100 + position
         if prev_position is None:
-            result_text += PRODUCT_POSITION_MESSAGE.format(
+            result_text += text.PRODUCT_POSITION_MESSAGE.format(
                 city=destination.city,
                 position=total_position
             )
@@ -149,7 +143,7 @@ async def get_result_text(results: dict) -> str:
                 position_arrow = ' ︎▬'
             else:
                 position_arrow = ' ⬇'
-            result_text += PRODUCT_POSITION_SCHEDULE_MESSAGE.format(
+            result_text += text.PRODUCT_POSITION_SCHEDULE_MESSAGE.format(
                 city=destination.city,
                 position=total_position,
                 prev_position=prev_position,
