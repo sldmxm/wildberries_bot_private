@@ -69,14 +69,15 @@ async def position_parse_keyboard(article: int, query: str):
         query=query
     )
     timezone = pytz.timezone(settings.TIME_ZONE)
-    nine_am = time(hour=9, tzinfo=timezone)
+    nine_am = time(hour=9)
     current_date = date.today()
     start_time = datetime.combine(current_date, nine_am)
+    start_time_local = timezone.localize(start_time)
     callback_daily = await Callback.objects.acreate(
         article=article,
         query=query,
         interval=timedelta(days=1),
-        start_time=start_time
+        start_time=start_time_local
     )
     callback_hourly = {
         hours: await Callback.objects.acreate(
