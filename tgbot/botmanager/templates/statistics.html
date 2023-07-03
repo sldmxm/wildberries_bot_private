@@ -4,7 +4,20 @@
 User Statistics
 {% endblock %}
 
+{% block messages %}
+    {% if messages %}
+        <ul class="messagelist">{% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+        {% endfor %}</ul>
+    {% endif %}
+    <h1>Всего пользователей - {{ all_users }} </h1>
+    <h1>Всего запросов - {{ all_requests }} </h1>
+    <h1>Запросов на пользователя - {{ requests_for_user }} </h1>
+{% endblock messages %}
+{% block coltype %}container{% endblock %}
 {% block content %}
+<div class="row">
+    <div class="col-lg-4">
    <h1>Количество пользователей по датам</h1>
     <p>
     <table>
@@ -21,8 +34,10 @@ User Statistics
         </tr>
         {% endfor %}
     </table>
+    
     </p>
-
+</div>
+<div class="col-lg-4">
     <p>
     <h1>Запросы в разрезе пользователей </h1>
 
@@ -39,6 +54,8 @@ User Statistics
         {% endfor %}
     </table>
     </p>
+</div>
+<div class="col-lg-4">
     <p>
         <h1>Запросы по датам </h1>
     
@@ -55,10 +72,11 @@ User Statistics
             {% endfor %}
         </table>
     </p>
-
-    <p> 
-        <h1>Всего пользователей - {{ all_users }} </h1>
-        <h1>Всего запросов - {{ all_requests }} </h1>
-        <h1>Запросов на пользователя - {{ requests_for_user }} </h1>
+</div>
+</div>
 {% endblock %}
+
+
+
+
 
