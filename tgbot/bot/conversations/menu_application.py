@@ -1,4 +1,5 @@
 import re
+from parser.acceptance_rate import get_rates
 from parser.jobs import create_job, get_user_jobs, stop_job
 from parser.position_parser import get_position, get_result_text
 from parser.residue_parser import get_residue
@@ -199,12 +200,12 @@ async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return RESIDUE_PARSER_CONVERSATION
 
 
-async def acceptance_rate_help_message(
+async def storehouses_page_1(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
-    """Обработка вспомогательного сообщения коэффициента приемки"""
-    reply_markup = keyboards.cancel_keyboard()
+    """Первая страница с выбором складов"""
+    reply_markup = keyboards.storehouses_keyboard_1()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text.ACCEPTANCE_RATE_START_MESSAGE,
@@ -213,11 +214,47 @@ async def acceptance_rate_help_message(
     return ACCEPTANCE_RATE_CONVERSATION
 
 
-async def acceptance_rate(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def storehouses_page_2(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+    """Вторая страница с выбором складов"""
+    reply_markup = keyboards.storehouses_keyboard_2()
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text.ACCEPTANCE_RATE_START_MESSAGE,
+        reply_markup=reply_markup
+    )
+    return ACCEPTANCE_RATE_CONVERSATION
+
+
+async def storehouses_page_3(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+    """Третья страница с выбором складов"""
+    reply_markup = keyboards.storehouses_keyboard_3()
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text.ACCEPTANCE_RATE_START_MESSAGE,
+        reply_markup=reply_markup
+    )
+    return ACCEPTANCE_RATE_CONVERSATION
+
+
+async def acceptance_rate(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
     """Обработка коэффициента приемки"""
-    await context.bot.answer_callback_query(
-        update.callback_query.id,
-        'В разработке'
+    reply_markup = keyboards.return_to_storehouse_page_1_keyboard()
+    storehouse = update.callback_query.data.split(':')[1]
+    table = await get_rates(storehouse)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=f'{storehouse}:\n<pre>{table}</pre>',
+        parse_mode='HTML',
+        reply_markup=reply_markup,
     )
     return ACCEPTANCE_RATE_CONVERSATION
 
