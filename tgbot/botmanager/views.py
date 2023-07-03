@@ -25,7 +25,10 @@ def user_statistics(request):
 
     all_requests = UserAction.objects.count()
     all_users = TelegramUser.objects.count()
-    requests_for_user = round(all_requests / all_users, 2)
+    if all_users != 0:
+        requests_for_user = round(all_requests / all_users, 2)
+    else:
+        requests_for_user = 0
 
     context: dict = {
         'users_count': users_count,
