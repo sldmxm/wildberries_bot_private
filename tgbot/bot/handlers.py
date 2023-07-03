@@ -102,16 +102,29 @@ def register_conversation_handlers(application: Application) -> None:
     acceptance_rate_conversation = ConversationHandler(
         entry_points=[
             CallbackQueryHandler(
-                menu_application.acceptance_rate_help_message,
-                pattern=callback.CALLBACK_ACCEPTANCE_RATE
+                menu_application.storehouses_page_1,
+                pattern=callback.CALLBACK_ACCEPTANCE_RATE_HELP
             )
         ],
         states={
             menu_application.ACCEPTANCE_RATE_CONVERSATION: [
-                MessageHandler(
-                    filters.Text(),
-                    menu_application.acceptance_rate
-                )
+                CallbackQueryHandler(
+                    menu_application.acceptance_rate,
+                    pattern=callback.CALLBACK_STOREHOUSE_PATTERN
+                ),
+                CallbackQueryHandler(
+                    menu_application.storehouses_page_1,
+                    pattern=callback.CALLBACK_SH_PAGE_1
+                ),
+                CallbackQueryHandler(
+                    menu_application.storehouses_page_2,
+                    pattern=callback.CALLBACK_SH_PAGE_2
+                ),
+                CallbackQueryHandler(
+                    menu_application.storehouses_page_3,
+                    pattern=callback.CALLBACK_SH_PAGE_3
+                ),
+
             ]
         },
         fallbacks=[

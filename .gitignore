@@ -162,4 +162,8 @@ cython_debug/
 #.vscode
 .vscode/
 
+# Django migrations
 migrations/
+
+# Static
+static/
