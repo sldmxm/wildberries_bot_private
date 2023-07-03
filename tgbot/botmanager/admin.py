@@ -1,5 +1,6 @@
 from asgiref.sync import async_to_sync
 from django.contrib import admin
+from django.contrib.auth.models import Group
 from django.shortcuts import redirect
 from django.urls import reverse
 from telegram import Bot
@@ -26,6 +27,7 @@ class TelegramUserAdmin(admin.ModelAdmin):
 
 admin.site.site_title = 'Административная панель бота'
 admin.site.site_header = 'Административная панель бота'
+admin.site.unregister(Group)
 
 
 @admin.register(Mailing)
