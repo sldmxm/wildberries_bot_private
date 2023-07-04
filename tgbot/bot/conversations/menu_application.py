@@ -1,15 +1,19 @@
 import re
+from parser.acceptance_rate import get_rates
 from parser.jobs import create_job, get_user_jobs, stop_job
 from parser.position_parser import get_position, get_result_text
 from parser.residue_parser import get_residue
+from bot.core.logging import logger
 
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 
 from bot import keyboards
-from bot.constants import callback, text
+from bot.constants import actions, callback, text
 from bot.models import Callback
-from bot.utils import check_subscription, write_user, data_export_to_xls
+from bot.utils import (
+    check_subscription, register_user_action, write_user, data_export_to_xls
+)
 
 
 (
@@ -49,18 +53,27 @@ async def position_parser_help_message(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """обработка вспомогательного сообщения парсера позиций"""
-    reply_markup = keyboards.cancel_keyboard()
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text.PARSING_START_MESSAGE,
-        reply_markup=reply_markup
-    )
-    return POSITION_PARSER_CONVERSATION
+    if await check_subscription(update, context):
+        reply_markup = keyboards.cancel_keyboard()
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=text.PARSING_START_MESSAGE,
+            reply_markup=reply_markup
+        )
+        return POSITION_PARSER_CONVERSATION
+    else:
+        query = update.callback_query
+        await query.answer('Вы не подписались на канал.')
 
 
+@register_user_action(actions.POSITION_PARSER)
 async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера позиций"""
     match = re.match(text.POSITION_PARSER_PATTERN, update.message.text)
+    logger.info(text.LOG_MESSAGE_USER_START_PARSING.format(
+                username=update.effective_chat.username,
+                chat_id=update.effective_chat.id,
+                position=int(match.group(1))))
     response_text = "Invalid request"
     if match:
         await context.bot.send_message(
@@ -87,8 +100,12 @@ async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
         chat_id=update.effective_chat.id,
         text=response_text
     )
+    logger.info(text.LOG_MESSAGE_WRONG_ARTICLE.format(
+                username=update.effective_chat.username,
+                chat_id=update.effective_chat.id))
 
 
+@register_user_action(actions.UPDATE_POSITION)
 async def update_position_parser(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
@@ -98,6 +115,10 @@ async def update_position_parser(
         callback.CALLBACK_UPDATE_PATTERN,
         update.callback_query.data
     )
+    logger.info(text.LOG_MESSAGE_USER_UPDATE_PARSING.format(
+                username=update.effective_chat.username,
+                chat_id=update.effective_chat.id,
+                position=int(match.group(1))))
     callback_id = int(match.group(1))
     callback_data = await Callback.objects.aget(pk=callback_id)
     results = await get_position(callback_data.article, callback_data.query)
@@ -122,6 +143,7 @@ async def update_position_parser(
     return POSITION_PARSER_CONVERSATION
 
 
+@register_user_action(actions.SUBSCRIBE)
 async def callback_subscribe_position_parser(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
@@ -133,6 +155,10 @@ async def callback_subscribe_position_parser(
     )
     callback_id = int(match.group(1))
     callback_data = await Callback.objects.aget(pk=callback_id)
+    logger.info(text.LOG_MESSAGE_USER_SUBSCRIPTION_CREATED.format(
+                username=update.effective_chat.username,
+                chat_id=update.effective_chat.id,
+                position=int(match.group(1))))
     await create_job(
         update=update,
         context=context,
@@ -153,19 +179,27 @@ async def residue_parser_help_message(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Обработка вспомогательного сообщения парсера остатков"""
-    reply_markup = keyboards.cancel_keyboard()
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text.RESIDUE_PARSER_START_MESSAGE,
-        reply_markup=reply_markup
-    )
-    return RESIDUE_PARSER_CONVERSATION
+    if await check_subscription(update, context):
+        reply_markup = keyboards.cancel_keyboard()
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=text.RESIDUE_PARSER_START_MESSAGE,
+            reply_markup=reply_markup
+        )
+        return RESIDUE_PARSER_CONVERSATION
+    else:
+        query = update.callback_query
+        await query.answer('Вы не подписались на канал.')
 
 
 async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера остатков"""
     match = re.match(text.RESIDUE_PARSER_PATTERN, update.message.text)
     article = int(match.group(1))
+    logger.info(text.LOG_MESSAGE_RESIDUE_REQUEST.format(
+                username=update.effective_chat.username,
+                chat_id=update.effective_chat.id,
+                position=int(match.group(1))))
     parser_data = await get_residue(article)
     if not parser_data:
         await context.bot.send_message(
@@ -199,12 +233,30 @@ async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return RESIDUE_PARSER_CONVERSATION
 
 
-async def acceptance_rate_help_message(
+async def storehouses_page_1(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
-    """Обработка вспомогательного сообщения коэффициента приемки"""
-    reply_markup = keyboards.cancel_keyboard()
+    """Первая страница с выбором складов"""
+    if await check_subscription(update, context):
+        reply_markup = keyboards.storehouses_keyboard_1()
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=text.ACCEPTANCE_RATE_START_MESSAGE,
+            reply_markup=reply_markup
+        )
+        return ACCEPTANCE_RATE_CONVERSATION
+    else:
+        query = update.callback_query
+        await query.answer('Вы не подписались на канал.')
+
+
+async def storehouses_page_2(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+    """Вторая страница с выбором складов"""
+    reply_markup = keyboards.storehouses_keyboard_2()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text.ACCEPTANCE_RATE_START_MESSAGE,
@@ -213,11 +265,33 @@ async def acceptance_rate_help_message(
     return ACCEPTANCE_RATE_CONVERSATION
 
 
-async def acceptance_rate(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def storehouses_page_3(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+    """Третья страница с выбором складов"""
+    reply_markup = keyboards.storehouses_keyboard_3()
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text.ACCEPTANCE_RATE_START_MESSAGE,
+        reply_markup=reply_markup
+    )
+    return ACCEPTANCE_RATE_CONVERSATION
+
+
+async def acceptance_rate(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
     """Обработка коэффициента приемки"""
-    await context.bot.answer_callback_query(
-        update.callback_query.id,
-        'В разработке'
+    reply_markup = keyboards.return_to_storehouse_page_1_keyboard()
+    storehouse = update.callback_query.data.split(':')[1]
+    table = await get_rates(storehouse)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=f'{storehouse}:\n<pre>{table}</pre>',
+        parse_mode='HTML',
+        reply_markup=reply_markup,
     )
     return ACCEPTANCE_RATE_CONVERSATION
 
@@ -227,16 +301,20 @@ async def user_subscriptions(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Обработка подписок на позиции"""
-    jobs = await get_user_jobs(update, context)
-    if jobs:
-        results = '\n'.join([f'{job.article} {job.query}' for job in jobs])
-        response_text = text.SUBSCRIPTIONS_MESSAGE.format(results=results)
+    if await check_subscription(update, context):
+        jobs = await get_user_jobs(update, context)
+        if jobs:
+            results = '\n'.join([f'{job.article} {job.query}' for job in jobs])
+            response_text = text.SUBSCRIPTIONS_MESSAGE.format(results=results)
+        else:
+            response_text = text.NO_SUBSCRIPTIONS_MESSAGE
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=response_text
+        )
     else:
-        response_text = text.NO_SUBSCRIPTIONS_MESSAGE
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=response_text
-    )
+        query = update.callback_query
+        await query.answer('Вы не подписались на канал.')
 
 
 async def export_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -244,6 +322,9 @@ async def export_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
     match = re.match(
         callback.CALLBACK_EXPORT_RESULTS_PATTERN, update.callback_query.data
     )
+    logger.info(text.LOG_MESSAGE_DOWNLOAD.format(
+                username=update.effective_chat.username,
+                chat_id=update.effective_chat.id))
     job_id = int(match.group(1))
     file = await data_export_to_xls(job_id=job_id)
     doc = open(file, 'rb')
@@ -263,6 +344,10 @@ async def unsubscribe(
         update.callback_query.data
     )
     job_id = int(match.group(1))
+    logger.info(text.LOG_MESSAGE_UNSUBSCRIBE.format(
+                username=update.effective_chat.username,
+                chat_id=update.effective_chat.id,
+                position=job_id))
     await stop_job(update=update, context=context, job_id=job_id)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,

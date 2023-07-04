@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     webhook_url: str = None
     webhook_port: int = 8443
     webhook_local_link: str = '0.0.0.0'
+    log_filename: str = 'bot.log'
+    log_level: str = 'INFO'
 
     class Config:
         env_file = '.env'
