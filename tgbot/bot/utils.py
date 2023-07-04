@@ -8,6 +8,7 @@ from telegram.ext import ContextTypes
 
 from bot.constants.text import MEMBER_STATUSES
 from bot.core.settings import settings
+from bot.models import UserAction
 from botmanager.models import TelegramUser
 
 from parser.models import Job, ProductPosition
