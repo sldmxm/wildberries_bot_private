@@ -8,10 +8,12 @@ from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 
 from bot import keyboards
-from bot.constants import callback, text, states
+from bot.constants import actions, callback, text, states
 from bot.core.logging import logger
 from bot.models import Callback
-from bot.utils import check_subscription, data_export_to_xls, write_user
+from bot.utils import (
+    check_subscription, register_user_action, write_user, data_export_to_xls
+)
 
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -51,12 +53,13 @@ async def position_parser_help_message(
             text=text.PARSING_START_MESSAGE,
             reply_markup=reply_markup
         )
-        return states.POSITION_PARSER_CONVERSATION
+        return POSITION_PARSER_CONVERSATION
     else:
         query = update.callback_query
         await query.answer('Вы не подписались на канал.')
 
 
+@register_user_action(actions.POSITION_PARSER)
 async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера позиций"""
     match = re.match(text.POSITION_PARSER_PATTERN, update.message.text)
@@ -95,6 +98,7 @@ async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 chat_id=update.effective_chat.id))
 
 
+@register_user_action(actions.UPDATE_POSITION)
 async def update_position_parser(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
@@ -132,6 +136,7 @@ async def update_position_parser(
     return states.POSITION_PARSER_CONVERSATION
 
 
+@register_user_action(actions.SUBSCRIBE)
 async def callback_subscribe_position_parser(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
