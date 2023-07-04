@@ -21,8 +21,9 @@ def register_user_action(action):
     """Декоратор для записи действия пользователя в базу данных"""
     def decorator(func):
         @wraps(func)
-        async def wrapper(args, **kwargs):
+        async def wrapper(*args, **kwargs):
             telegram_id = args[0].effective_chat.id
+            await write_user(args[0])
             telegram_user = await TelegramUser.objects.aget(
                     telegram_id=telegram_id
                 )
@@ -30,7 +31,7 @@ def register_user_action(action):
                 telegram_user=telegram_user,
                 action=action
             )
-            await func(args, **kwargs)
+            await func(*args, **kwargs)
             await user_action.asave()
         return wrapper
     return decorator
