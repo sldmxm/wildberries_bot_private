@@ -9,9 +9,11 @@ from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 
 from bot import keyboards
-from bot.constants import callback, text
+from bot.constants import actions, callback, text
 from bot.models import Callback
-from bot.utils import check_subscription, write_user, data_export_to_xls
+from bot.utils import (
+    check_subscription, register_user_action, write_user, data_export_to_xls
+)
 
 
 (
@@ -64,7 +66,7 @@ async def position_parser_help_message(
         await query.answer('Вы не подписались на канал.')
 
 
-@register_user_action(actions.POSITION_PARSER)
+#@register_user_action(actions.POSITION_PARSER)
 async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера позиций"""
     match = re.match(text.POSITION_PARSER_PATTERN, update.message.text)
@@ -103,7 +105,7 @@ async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 chat_id=update.effective_chat.id))
 
 
-@register_user_action(actions.UPDATE_POSITION)
+#@register_user_action(actions.UPDATE_POSITION)
 async def update_position_parser(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
@@ -141,7 +143,7 @@ async def update_position_parser(
     return POSITION_PARSER_CONVERSATION
 
 
-@register_user_action(actions.SUBSCRIBE)
+#@register_user_action(actions.SUBSCRIBE)
 async def callback_subscribe_position_parser(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
