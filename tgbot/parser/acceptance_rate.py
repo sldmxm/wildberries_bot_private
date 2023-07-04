@@ -1,16 +1,11 @@
 import json
-from http import HTTPStatus
-
-import aiohttp
-from prettytable import PrettyTable
-from asgiref.sync import sync_to_async
-
+from parser.constants import ACCEPTANCE_HEADERS, ACCEPTANCE_LINK, PACKAGE
 from parser.models import Storehouse
-from parser.constants import (
-    ACCEPTANCE_HEADERS,
-    ACCEPTANCE_LINK,
-    PACKAGE,
-)
+
+from asgiref.sync import sync_to_async
+from prettytable import PrettyTable
+
+from .clientsession import ClientSession
 
 
 def coef_in_text(coef: int) -> str:
@@ -37,31 +32,25 @@ async def get_rates(storehouse: str) -> str:
     """
     sh_index = await get_sh_index(storehouse)
     table = PrettyTable()
-    async with aiohttp.ClientSession() as session:
-        response = await session.get(
-            ACCEPTANCE_LINK.format(index=sh_index),
-            headers=ACCEPTANCE_HEADERS
-        )
-        if response.status != HTTPStatus.OK:
-            return
-        response_text = await response.text()
-        response_json = json.loads(response_text)
-        dates = ['Дата', ['-' for i in range(10)]]
-        all_rates = []
-        for key in response_json:
-            rates = [PACKAGE[key], []]
-            if len(response_json[key]) > 1:
-                for i in range(10):
-                    rates[1].append(coef_in_text(
-                        response_json[key][i]['coefficient']
-                        )
-                    )
-                    if dates[1][i] == '-':
-                        dates[1][i] = response_json[key][i]['date'][:10]
-            else:
-                rates[1].extend(['-' for i in range(10)])
-            all_rates.append(rates)
-        table.add_column(*dates)
-        for rate in all_rates:
-            table.add_column(*rate)
-        return table
+    link = ACCEPTANCE_LINK.format(index=sh_index)
+    async with ClientSession(headers=ACCEPTANCE_HEADERS) as session:
+        response_data = await session.get_data(link)
+    response_json = json.loads(response_data)
+    dates = ['Дата', ['-' for i in range(10)]]
+    all_rates = []
+    for key in response_json:
+        rates = [PACKAGE[key], []]
+        if len(response_json[key]) > 1:
+            for i in range(10):
+                rates[1].append(coef_in_text(
+                    response_json[key][i]['coefficient']
+                ))
+                if dates[1][i] == '-':
+                    dates[1][i] = response_json[key][i]['date'][:10]
+        else:
+            rates[1].extend(['-' for i in range(10)])
+        all_rates.append(rates)
+    table.add_column(*dates)
+    for rate in all_rates:
+        table.add_column(*rate)
+    return table

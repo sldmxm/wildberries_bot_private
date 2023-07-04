@@ -3,8 +3,9 @@ import logging.config
 import logging.handlers
 
 from bot.core.settings import settings
-from bot.error_handler import error_handler # noqa
+from bot.error_handler import error_handler  # noqa
 from tgbot.settings import BASE_DIR
+
 
 LOG_PATH = BASE_DIR / '.data' / 'logs'
 LOG_PATH.mkdir(parents=True, exist_ok=True)
@@ -30,7 +31,7 @@ LOGGING = {
             'stream': 'ext://sys.stdout'
         },
         'error_handler': {
-            'class': 'logging.NullHandler'  # Используем NullHandler для игнорирования логирования ошибок по умолчанию
+            'class': 'logging.NullHandler'
         },
     },
     'loggers': {

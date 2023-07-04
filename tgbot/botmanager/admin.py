@@ -55,13 +55,11 @@ class MailingAdmin(admin.ModelAdmin):
             self.set_recipients(request, obj.id)
             return redirect(reverse('admin:botmanager_mailing_change',
                                     kwargs={'object_id': obj.id}))
-        elif '_send_mailing' in request.POST:
+        if '_send_mailing' in request.POST:
             self.send_message(request, obj.id)
             return redirect(reverse('admin:botmanager_mailing_change',
                                     kwargs={'object_id': obj.id}))
-
-        else:
-            return super().response_change(request, obj)
+        return super().response_change(request, obj)
 
     def get_form(self, request, obj=None, **kwargs):
         """Значение поля author по умолчанию"""
@@ -116,9 +114,10 @@ class MailingAdmin(admin.ModelAdmin):
             if message.image:
                 self.send_photo(bot, recipient.telegram_id,
                                 open(str(message.image), 'rb'))
-            message_text = '\n'.join(
-                [message.content, message.link]
-                ) if message.link else message.content
+            if message.link:
+                message_text = '\n'.join([message.content, message.link])
+            else:
+                message_text = message.content
             self.send_messages(bot, recipient.telegram_id, message_text)
             if message.file_attache:
                 self.send_document(bot, recipient.telegram_id,

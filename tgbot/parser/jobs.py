@@ -30,11 +30,8 @@ async def create_job(
         query=query,
         user_id=user_id
     ).afirst()
-    if (
-            db_job is not None and
-            not db_job.finished and
-            interval == db_job.interval
-    ):
+    if (db_job is not None and not
+            db_job.finished and interval == db_job.interval):
         return
     if db_job is not None:
         job = context.job_queue.get_jobs_by_name(str(db_job.pk))
