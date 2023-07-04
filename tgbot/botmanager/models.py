@@ -64,12 +64,12 @@ class Mailing(models.Model):
 
     image = models.ImageField(
         verbose_name='Прикрепленное изображение',
-        upload_to='tgbot/botmanager/static/images/',
+        upload_to='static/images/',
         blank=True,)
 
     file_attache = models.FileField(
         verbose_name='Прикрепленный файл',
-        upload_to='tgbot/botmanager/static/files/',
+        upload_to='static/files/',
         blank=True,)
 
     recipients = models.ManyToManyField(
