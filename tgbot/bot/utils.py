@@ -1,3 +1,4 @@
+from functools import wraps
 from asgiref.sync import sync_to_async
 from datetime import datetime, timedelta
 
@@ -14,6 +15,25 @@ from botmanager.models import TelegramUser
 from parser.models import Job, ProductPosition
 
 REPORT_DAYS = 3
+
+
+def register_user_action(action):
+    """Декоратор для записи действия пользователя в базу данных"""
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(args, **kwargs):
+            telegram_id = args[0].effective_chat.id
+            telegram_user = await TelegramUser.objects.aget(
+                    telegram_id=telegram_id
+                )
+            user_action = await UserAction.objects.acreate(
+                telegram_user=telegram_user,
+                action=action
+            )
+            await func(args, **kwargs)
+            await user_action.asave()
+        return wrapper
+    return decorator
 
 
 @sync_to_async
