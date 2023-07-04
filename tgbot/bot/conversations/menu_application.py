@@ -8,29 +8,30 @@ from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 
 from bot import keyboards
-from bot.constants import actions, callback, text, states
+from bot.constants import actions, callback, states, text
 from bot.core.logging import logger
 from bot.models import Callback
 from bot.utils import (
-    check_subscription, register_user_action, write_user, data_export_to_xls
+    check_user_subscription,
+    data_export_to_xls,
+    register_user_action,
+    write_user,
 )
 
 
+@check_user_subscription
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка меню"""
-    query = update.callback_query
-    if await check_subscription(update, context):
-        reply_markup = keyboards.menu_keyboard()
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=text.HELP_MESSAGE,
-            reply_markup=reply_markup
-        )
-        await write_user(update)
-    else:
-        await query.answer('Вы не подписались на канал.')
+    reply_markup = keyboards.menu_keyboard()
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text.HELP_MESSAGE,
+        reply_markup=reply_markup
+    )
+    await write_user(update)
 
 
+@check_user_subscription
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка отмены действия"""
     await context.bot.send_message(
@@ -41,24 +42,22 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
+@check_user_subscription
 async def position_parser_help_message(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
     """обработка вспомогательного сообщения парсера позиций"""
-    if await check_subscription(update, context):
-        reply_markup = keyboards.cancel_keyboard()
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=text.PARSING_START_MESSAGE,
-            reply_markup=reply_markup
-        )
-        return POSITION_PARSER_CONVERSATION
-    else:
-        query = update.callback_query
-        await query.answer('Вы не подписались на канал.')
+    reply_markup = keyboards.cancel_keyboard()
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text.PARSING_START_MESSAGE,
+        reply_markup=reply_markup
+    )
+    return states.POSITION_PARSER_CONVERSATION
 
 
+@check_user_subscription
 @register_user_action(actions.POSITION_PARSER)
 async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера позиций"""
@@ -98,6 +97,7 @@ async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 chat_id=update.effective_chat.id))
 
 
+@check_user_subscription
 @register_user_action(actions.UPDATE_POSITION)
 async def update_position_parser(
         update: Update,
@@ -136,6 +136,7 @@ async def update_position_parser(
     return states.POSITION_PARSER_CONVERSATION
 
 
+@check_user_subscription
 @register_user_action(actions.SUBSCRIBE)
 async def callback_subscribe_position_parser(
         update: Update,
@@ -167,24 +168,22 @@ async def callback_subscribe_position_parser(
     return states.POSITION_PARSER_CONVERSATION
 
 
+@check_user_subscription
 async def residue_parser_help_message(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Обработка вспомогательного сообщения парсера остатков"""
-    if await check_subscription(update, context):
-        reply_markup = keyboards.cancel_keyboard()
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=text.RESIDUE_PARSER_START_MESSAGE,
-            reply_markup=reply_markup
-        )
-        return states.RESIDUE_PARSER_CONVERSATION
-    else:
-        query = update.callback_query
-        await query.answer('Вы не подписались на канал.')
+    reply_markup = keyboards.cancel_keyboard()
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text.RESIDUE_PARSER_START_MESSAGE,
+        reply_markup=reply_markup
+    )
+    return states.RESIDUE_PARSER_CONVERSATION
 
 
+@check_user_subscription
 async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка парсера остатков"""
     match = re.match(text.RESIDUE_PARSER_PATTERN, update.message.text)
@@ -226,24 +225,22 @@ async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return states.RESIDUE_PARSER_CONVERSATION
 
 
+@check_user_subscription
 async def storehouses_page_1(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Первая страница с выбором складов"""
-    if await check_subscription(update, context):
-        reply_markup = keyboards.storehouses_keyboard_1()
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=text.ACCEPTANCE_RATE_START_MESSAGE,
-            reply_markup=reply_markup
-        )
-        return states.ACCEPTANCE_RATE_CONVERSATION
-    else:
-        query = update.callback_query
-        await query.answer('Вы не подписались на канал.')
+    reply_markup = keyboards.storehouses_keyboard_1()
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=text.ACCEPTANCE_RATE_START_MESSAGE,
+        reply_markup=reply_markup
+    )
+    return states.ACCEPTANCE_RATE_CONVERSATION
 
 
+@check_user_subscription
 async def storehouses_page_2(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
@@ -258,6 +255,7 @@ async def storehouses_page_2(
     return states.ACCEPTANCE_RATE_CONVERSATION
 
 
+@check_user_subscription
 async def storehouses_page_3(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
@@ -272,6 +270,7 @@ async def storehouses_page_3(
     return states.ACCEPTANCE_RATE_CONVERSATION
 
 
+@check_user_subscription
 async def acceptance_rate(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
@@ -289,27 +288,25 @@ async def acceptance_rate(
     return states.ACCEPTANCE_RATE_CONVERSATION
 
 
+@check_user_subscription
 async def user_subscriptions(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Обработка подписок на позиции"""
-    if await check_subscription(update, context):
-        jobs = await get_user_jobs(update, context)
-        if jobs:
-            results = '\n'.join([f'{job.article} {job.query}' for job in jobs])
-            response_text = text.SUBSCRIPTIONS_MESSAGE.format(results=results)
-        else:
-            response_text = text.NO_SUBSCRIPTIONS_MESSAGE
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=response_text
-        )
+    jobs = await get_user_jobs(update, context)
+    if jobs:
+        results = '\n'.join([f'{job.article} {job.query}' for job in jobs])
+        response_text = text.SUBSCRIPTIONS_MESSAGE.format(results=results)
     else:
-        query = update.callback_query
-        await query.answer('Вы не подписались на канал.')
+        response_text = text.NO_SUBSCRIPTIONS_MESSAGE
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=response_text
+    )
 
 
+@check_user_subscription
 async def export_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка выгруски результатов"""
     match = re.match(

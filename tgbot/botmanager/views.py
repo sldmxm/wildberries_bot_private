@@ -9,18 +9,26 @@ from bot.models import UserAction
 def user_statistics(request):
     template = 'statistics.html'
 
-    users_count = TelegramUser.objects.annotate(created_date=TruncDate('created_at')).values(
-        'created_date').annotate(total=Count('id')).order_by('created_date')
+    users_count = TelegramUser.objects.annotate(
+        created_date=TruncDate('created_at')
+    ).values('created_date').annotate(
+        total=Count('id')
+    ).order_by('created_date')
 
     cumulative_total = 0
     for entry in users_count:
         cumulative_total += entry['total']
         entry['cumulative_total'] = cumulative_total
 
-    user_actions = UserAction.objects.values('telegram_user__username').annotate(count_requests=Count('id'))
+    user_actions = UserAction.objects.values(
+        'telegram_user__username'
+    ).annotate(count_requests=Count('id'))
 
-    datetime_actions = UserAction.objects.annotate(request_date=TruncDate('datetime')).values(
-        'request_date').annotate(total=Count('id')).order_by('-request_date')
+    datetime_actions = UserAction.objects.annotate(
+        request_date=TruncDate('datetime')
+    ).values('request_date').annotate(
+        total=Count('id')
+    ).order_by('-request_date')
 
     all_requests = UserAction.objects.count()
     all_users = TelegramUser.objects.count()

@@ -7,7 +7,7 @@ from telegram.ext import (
     filters,
 )
 
-from bot.constants import callback, text, states
+from bot.constants import callback, states, text
 from bot.conversations import command_application, menu_application
 
 

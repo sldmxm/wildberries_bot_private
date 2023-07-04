@@ -6,11 +6,13 @@ from fake_useragent import UserAgent
 
 
 class ClientSession:
-    def __init__(self):
+    def __init__(self, headers=None):
         ua = UserAgent()
-        self. headers = {
+        self.headers = {
             'User-Agent': ua.random
         }
+        if headers:
+            self.headers.update(headers)
         self.session = None
 
     async def __aenter__(self):

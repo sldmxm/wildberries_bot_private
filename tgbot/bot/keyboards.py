@@ -146,7 +146,7 @@ async def schedule_parse_keyboard(job_id):
             ),
         ],
     ]
-    return InlineKeyboardMarkup(keyboard)  
+    return InlineKeyboardMarkup(keyboard)
 
 
 def storehouses_keyboard_1():
