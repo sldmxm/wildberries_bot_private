@@ -105,7 +105,7 @@ async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 chat_id=update.effective_chat.id))
 
 
-@register_user_action(actions.UPDATE_POSITION)
+#@register_user_action(actions.UPDATE_POSITION)
 async def update_position_parser(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
