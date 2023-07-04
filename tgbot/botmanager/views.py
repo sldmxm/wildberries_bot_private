@@ -2,7 +2,6 @@ from django.db.models import Count
 from django.db.models.functions import TruncDate
 from django.shortcuts import render
 
-
 from .models import TelegramUser
 from bot.models import UserAction
 

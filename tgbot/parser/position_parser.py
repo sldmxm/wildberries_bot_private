@@ -2,23 +2,43 @@ import asyncio
 import json
 from itertools import chain
 from math import ceil
+from parser import constants
 
 from .clientsession import ClientSession
-from .constants import PAGE_PARSING_LINK, TOTAL_PRODUCTS_LINK
 from .models import Destination
-from bot.constants.text import (
-    PRODUCT_POSITION_MESSAGE,
-    PRODUCT_POSITION_NOT_FOUND_MESSAGE,
-    PRODUCT_POSITION_SCHEDULE_MESSAGE,
-)
+from bot.constants import text
 
 
 loop = asyncio.get_event_loop()
 
 
+async def get_advert_position(article: int, query: str) -> int:
+    """Проверка, является ли товар реклманым,
+    если реклмнаый - возврщает его пзицию, иначе -1"""
+    link = constants.ADVERT_PRODUCTS_LINK.format(query=query)
+    async with ClientSession() as session:
+        response_data = await session.get_data(link)
+    response_json = json.loads(response_data)
+    adverts = response_json.get('adverts', [])
+    pages = response_json.get('pages', [])
+    if adverts is None or pages is None:
+        return -1
+    positions = [[
+        position + 100 * page_index for position in page.get('positions', [])
+    ] for page_index, page in enumerate(pages)]
+    positions = list(chain(*positions))
+    for index, advert in enumerate(adverts):
+        if article == advert.get('id', None):
+            return positions[index]
+    return -1
+
+
 async def get_total_positions(query: str, destination: int) -> int:
     """получение общего количества товаров по запросу"""
-    link = TOTAL_PRODUCTS_LINK.format(query=query, destination=destination)
+    link = constants.TOTAL_PRODUCTS_LINK.format(
+        query=query,
+        destination=destination
+    )
     async with ClientSession() as session:
         response_data = await session.get_data(link)
     response_json = json.loads(response_data)
@@ -35,7 +55,7 @@ async def parse_page(
         result: dict
 ) -> None:
     """парсинг страниц с товаром"""
-    link = PAGE_PARSING_LINK.format(
+    link = constants.PAGE_PARSING_LINK.format(
         destination=destination,
         page=str(page),
         query=query
@@ -61,6 +81,16 @@ async def async_execute(
         destinations: list[int]
 ) -> dict:
     """Получение словаря с позицией товара в пункте выдачи заказа"""
+    advert_position = await get_advert_position(article, query)
+    if advert_position != -1:
+        result = {
+            destination: {
+                'page': advert_position // 100 + 1,
+                'position': advert_position % 100,
+                'is_advert': True
+            } for destination in destinations
+        }
+        return result
     result = {destination: {} for destination in destinations}
     tasks = []
     for destination in destinations:
@@ -85,20 +115,24 @@ async def async_execute(
 
 async def get_result_text(results: dict) -> str:
     """создание текстового сообщения с положением товаров"""
-    result_text = ''
+    is_advert = list(results.values())[0].get('is_advert', False)
+    if is_advert:
+        result_text = text.ADVERT_PRODUCT_POSITION_MESSAGE
+    else:
+        result_text = ''
     async for destination in Destination.objects.all():
         result = results.get(destination.index, {})
         page = result.get('page', None)
         position = result.get('position', None)
         prev_position = result.get('prev_position', None)
         if position is None or page is None:
-            result_text += PRODUCT_POSITION_NOT_FOUND_MESSAGE.format(
+            result_text += text.PRODUCT_POSITION_NOT_FOUND_MESSAGE.format(
                 city=destination.city
             )
             continue
         total_position = (page - 1) * 100 + position
         if prev_position is None:
-            result_text += PRODUCT_POSITION_MESSAGE.format(
+            result_text += text.PRODUCT_POSITION_MESSAGE.format(
                 city=destination.city,
                 position=total_position
             )
@@ -109,7 +143,7 @@ async def get_result_text(results: dict) -> str:
                 position_arrow = ' ︎▬'
             else:
                 position_arrow = ' ⬇'
-            result_text += PRODUCT_POSITION_SCHEDULE_MESSAGE.format(
+            result_text += text.PRODUCT_POSITION_SCHEDULE_MESSAGE.format(
                 city=destination.city,
                 position=total_position,
                 prev_position=prev_position,

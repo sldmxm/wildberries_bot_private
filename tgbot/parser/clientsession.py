@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 import aiohttp
+from aiohttp.client_exceptions import ClientError
 from fake_useragent import UserAgent
 
 
@@ -23,10 +24,13 @@ class ClientSession:
         await self.session.close()
 
     async def get_data(self, link):
+        """Асинхронное получение данных по ссылки"""
         try:
             async with self.session.get(link, timeout=10) as response:
-                if response.status != HTTPStatus.OK:
-                    return await self.get_data(link)
-                return await response.content.read()
+                if response.status == HTTPStatus.OK:
+                    return await response.content.read()
         except TimeoutError:
-            return await self.get_data(link)
+            pass
+        except ClientError:
+            pass
+        return await self.get_data(link)
