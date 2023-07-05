@@ -1,8 +1,9 @@
 from telegram import Update
 from telegram.constants import ParseMode
-from telegram.ext import Application, ContextTypes, ConversationHandler
+from telegram.ext import Application, ContextTypes
 
 from bot.constants import text
+from bot.conversations import menu_application
 from bot.keyboards import start_keyboard
 
 
@@ -29,7 +30,31 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text.STOP_MESSAGE)
-    return ConversationHandler.END
+
+
+async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Обработка команды stop."""
+    await menu_application.menu(update, context)
+
+
+async def position(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Обработка команды position."""
+    await menu_application.position_parser_help_message(update, context)
+
+
+async def stock(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Обработка команды stock."""
+    await menu_application.residue_parser_help_message(update, context)
+
+
+async def storehouse_rate(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Обработка команды storehouse_rate."""
+    await menu_application.storehouses_page_1(update, context)
+
+
+async def my_subscriptions(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Обработка команды my_subscriptions."""
+    await menu_application.user_subscriptions(update, context)
 
 
 async def setup_my_commands(application: Application):
@@ -38,5 +63,10 @@ async def setup_my_commands(application: Application):
         ('start', 'Запуск бота'),
         ('help', 'Получить инструкцию'),
         ('stop', 'Остановить бота'),
+        ('menu', 'Главное меню'),
+        ('position', 'Парсер позиций'),
+        ('stock', 'Парсер остатков'),
+        ('storehouse_rate', 'Отслеживание коэффициента приемки WB'),
+        ('my_subscriptions', 'Мои подписки на позиции'),
     ]
     await application.bot.set_my_commands(bot_commands)
