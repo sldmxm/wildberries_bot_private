@@ -4,6 +4,7 @@ from django.contrib.auth.models import Group
 from django.shortcuts import redirect
 from django.urls import reverse
 from telegram import Bot
+from telegram.constants import ParseMode
 
 from .models import Mailing, TelegramUser
 from bot.core.settings import settings
@@ -71,7 +72,7 @@ class MailingAdmin(admin.ModelAdmin):
     async def send_messages(self, bot, user_id, message):
         """Конвертер для асинхронной отправки текстового сообщения"""
         async with bot:
-            await bot.send_message(user_id, message)
+            await bot.send_message(user_id, message, parse_mode=ParseMode.HTML)
 
     @async_to_sync
     async def send_photo(self, bot, user_id, photo):
