@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.constants import ParseMode
-from telegram.ext import Application, ContextTypes, ConversationHandler
+from telegram.ext import Application, ContextTypes
 
 from bot.constants import text
 from bot.conversations import menu_application
