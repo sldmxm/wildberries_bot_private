@@ -53,7 +53,7 @@ jobs:
             sudo docker compose --file docker-compose.yaml stop
             sudo docker compose --file docker-compose.yaml rm web -f
             sudo docker compose --file docker-compose.yaml rm tgbot -f
-            sudo docker compose --file docker-compose.yaml up --build -d
+            sudo docker compose --file docker-compose.yaml up --build -d --force-recreate
             sudo docker compose exec -T web python manage.py makemigrations bot
             sudo docker compose exec -T web python manage.py makemigrations botmanager
             sudo docker compose exec -T web python manage.py makemigrations parser
