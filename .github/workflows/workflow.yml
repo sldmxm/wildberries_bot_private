@@ -41,12 +41,13 @@ jobs:
 
             echo TELEGRAM_TOKEN="${{ secrets.TELEGRAM_TOKEN }}" >> .env
             echo CHANNEL_USERNAME="${{ secrets.CHANNEL_USERNAME }}" >> .env
-            echo HTTPS_PROXY="${{ secrets.HTTPS_PROXY }}" >> .env
-            echo HTTP_PROXY="${{ secrets.HTTP_PROXY }}" >> .env
 
-            echo WEBHOOK_URL="${{ secrets.WEBHOOK_URL }}" >> .env
-            echo WEBHOOK_PORT="${{ secrets.WEBHOOK_PORT }}" >> .env
-            echo WEBHOOK_LOCAL_LINK="${{ secrets.WEBHOOK_LOCAL_LINK }}" >> .env
+            # echo HTTPS_PROXY="${{ secrets.HTTPS_PROXY }}" >> .env
+            # echo HTTP_PROXY="${{ secrets.HTTP_PROXY }}" >> .env
+
+            # echo WEBHOOK_URL="${{ secrets.WEBHOOK_URL }}" >> .env
+            # echo WEBHOOK_PORT="${{ secrets.WEBHOOK_PORT }}" >> .env
+            # echo WEBHOOK_LOCAL_LINK="${{ secrets.WEBHOOK_LOCAL_LINK }}" >> .env
 
             sudo docker compose --file docker-compose.yaml stop
             sudo docker compose --file docker-compose.yaml rm web -f
