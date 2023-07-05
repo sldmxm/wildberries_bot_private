@@ -233,7 +233,10 @@ async def storehouses_page_1(
 ):
     """Первая страница с выбором складов"""
     reply_markup = keyboards.storehouses_keyboard_1()
-    if update.callback_query.data == callback.CALLBACK_ACCEPTANCE_RATE_HELP:
+    if (
+        update.callback_query is None or
+        update.callback_query.data == callback.CALLBACK_ACCEPTANCE_RATE_HELP
+    ):
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=text.ACCEPTANCE_RATE_START_MESSAGE,
@@ -243,10 +246,10 @@ async def storehouses_page_1(
         await update.effective_message.edit_reply_markup(
             reply_markup=reply_markup
         )
-    await context.bot.answer_callback_query(
-        update.callback_query.id,
-        'Страница 1'
-    )
+        await context.bot.answer_callback_query(
+            update.callback_query.id,
+            'Страница 1'
+        )
 
 
 @check_user_subscription

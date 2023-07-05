@@ -67,6 +67,6 @@ async def setup_my_commands(application: Application):
         ('position', 'Парсер позиций'),
         ('stock', 'Парсер остатков'),
         ('storehouse_rate', 'Отслеживание коэффициента приемки WB'),
-        ('my_subscriptions', 'Мои подписки на озиции'),
+        ('my_subscriptions', 'Мои подписки на позиции'),
     ]
     await application.bot.set_my_commands(bot_commands)
