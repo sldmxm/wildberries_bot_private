@@ -34,6 +34,10 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
 @check_user_subscription
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка отмены действия"""
+    await context.bot.answer_callback_query(
+        update.callback_query.id,
+        text.CANCEL_MESSAGE
+    )
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text.CANCEL_MESSAGE
@@ -124,6 +128,7 @@ async def update_position_parser(
             update.callback_query.id,
             'Ничего не изменилось'
         )
+        return
     await context.bot.edit_message_text(
         response_text,
         chat_id=update.effective_chat.id,
@@ -228,10 +233,19 @@ async def storehouses_page_1(
 ):
     """Первая страница с выбором складов"""
     reply_markup = keyboards.storehouses_keyboard_1()
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text.ACCEPTANCE_RATE_START_MESSAGE,
-        reply_markup=reply_markup
+    if update.callback_query.data == callback.CALLBACK_ACCEPTANCE_RATE_HELP:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=text.ACCEPTANCE_RATE_START_MESSAGE,
+            reply_markup=reply_markup
+        )
+    else:
+        await update.effective_message.edit_reply_markup(
+            reply_markup=reply_markup
+        )
+    await context.bot.answer_callback_query(
+        update.callback_query.id,
+        'Страница 1'
     )
 
 
@@ -242,10 +256,10 @@ async def storehouses_page_2(
 ):
     """Вторая страница с выбором складов"""
     reply_markup = keyboards.storehouses_keyboard_2()
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text.ACCEPTANCE_RATE_START_MESSAGE,
-        reply_markup=reply_markup
+    await update.effective_message.edit_reply_markup(reply_markup=reply_markup)
+    await context.bot.answer_callback_query(
+        update.callback_query.id,
+        'Страница 2'
     )
 
 
@@ -256,10 +270,10 @@ async def storehouses_page_3(
 ):
     """Третья страница с выбором складов"""
     reply_markup = keyboards.storehouses_keyboard_3()
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text.ACCEPTANCE_RATE_START_MESSAGE,
-        reply_markup=reply_markup
+    await update.effective_message.edit_reply_markup(reply_markup=reply_markup)
+    await context.bot.answer_callback_query(
+        update.callback_query.id,
+        'Страница 3'
     )
 
 
