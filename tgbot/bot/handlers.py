@@ -15,6 +15,23 @@ def register_conversation_handlers(application: Application) -> None:
     application.add_handler(CommandHandler('start', command_application.start))
     application.add_handler(CommandHandler('help', command_application.help))
     application.add_handler(CommandHandler('stop', command_application.stop))
+    application.add_handler(CommandHandler('menu', command_application.menu))
+    application.add_handler(CommandHandler(
+        'position',
+        command_application.position
+    ))
+    application.add_handler(CommandHandler(
+        'stock',
+        command_application.stock
+    ))
+    application.add_handler(CommandHandler(
+        'storehouse_rate',
+        command_application.storehouse_rate
+    ))
+    application.add_handler(CommandHandler(
+        'my_subscriptions',
+        command_application.my_subscriptions
+    ))
 
     application.add_handler(
         CallbackQueryHandler(
