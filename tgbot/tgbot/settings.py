@@ -14,12 +14,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY'),
 
+CSRF_TRUSTED = os.getenv('CSRF_TRUSTED')
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1/']
-
+CSRF_TRUSTED_ORIGINS = [f'http://*.{CSRF_TRUSTED}']
 
 # Application definition
 

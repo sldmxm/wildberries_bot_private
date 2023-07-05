@@ -1,0 +1,60 @@
+name: wildberries_bot_team_1 workflow
+
+on:
+  push:
+    branches: [release]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Uploading project files to remote server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          source: "tgbot/,Dockerfile_bot,Dockerfile_web,docker-compose.yaml,requirements.txt"
+          target: /home/${{ secrets.USER }}/app
+
+      - name: Building Docker image on remote server and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /home/${{ secrets.USER }}/app
+            sudo rm -f .env
+            touch .env
+
+            echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
+            echo CSRF_TRUSTED="${{ secrets.HOST }}" >> .env
+            echo DB_ENGINE="django.db.backends.postgresql" >> .env
+            echo DB_NAME="${{ secrets.DB_NAME }}" >> .env
+            echo DB_USER="${{ secrets.DB_USER }}" >> .env
+            echo POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" >> .env
+            echo DB_HOST="db" >> .env
+            echo DB_PORT="${{ secrets.DB_PORT }}" >> .env
+
+            echo TELEGRAM_TOKEN="${{ secrets.TELEGRAM_TOKEN }}" >> .env
+            echo CHANNEL_USERNAME="${{ secrets.CHANNEL_USERNAME }}" >> .env
+            echo HTTPS_PROXY="${{ secrets.HTTPS_PROXY }}" >> .env
+            echo HTTP_PROXY="${{ secrets.HTTP_PROXY }}" >> .env
+
+            echo WEBHOOK_URL="${{ secrets.WEBHOOK_URL }}" >> .env
+            echo WEBHOOK_PORT="${{ secrets.WEBHOOK_PORT }}" >> .env
+            echo WEBHOOK_LOCAL_LINK="${{ secrets.WEBHOOK_LOCAL_LINK }}" >> .env
+
+            sudo docker compose --file docker-compose.yaml stop
+            sudo docker compose --file docker-compose.yaml rm web -f
+            sudo docker compose --file docker-compose.yaml rm tgbot -f
+            sudo docker compose --file docker-compose.yaml up --build -d
+            sudo docker compose exec -T web python manage.py makemigrations bot
+            sudo docker compose exec -T web python manage.py makemigrations botmanager
+            sudo docker compose exec -T web python manage.py makemigrations parser
+            sudo docker compose exec -T web python manage.py makemigrations users
+            sudo docker compose exec -T web python manage.py migrate
+            sudo docker compose exec -T web python manage.py collectstatic --no-input
