@@ -16,7 +16,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
-          source: "tgbot/,Dockerfile_bot,Dockerfile_web,docker-compose.yaml,requirements.txt"
+          source: "tgbot/,data/,Dockerfile_bot,Dockerfile_web,docker-compose.yaml,requirements.txt"
           target: /home/${{ secrets.USER }}/app
 
       - name: Building Docker image on remote server and deploy
@@ -50,6 +50,12 @@ jobs:
             # echo WEBHOOK_PORT="${{ secrets.WEBHOOK_PORT }}" >> .env
             # echo WEBHOOK_LOCAL_LINK="${{ secrets.WEBHOOK_LOCAL_LINK }}" >> .env
 
+            echo ADMIN_USERNAME="${{ secrets.ADMIN_USERNAME }}" >> .env
+            echo ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD }}" >> .env
+            echo ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}" >> .env
+            echo ADMIN_FIRSTNAME="${{ secrets.ADMIN_FIRSTNAME }}" >> .env
+            echo ADMIN_LASTNAME="${{ secrets.ADMIN_LASTNAME }}" >> .env
+
             sudo docker compose --file docker-compose.yaml stop
             sudo docker compose --file docker-compose.yaml rm web -f
             sudo docker compose --file docker-compose.yaml rm tgbot -f
@@ -59,4 +65,5 @@ jobs:
             sudo docker compose exec -T web python manage.py makemigrations parser
             sudo docker compose exec -T web python manage.py makemigrations users
             sudo docker compose exec -T web python manage.py migrate
+            sudo docker compose exec -T web python manage.py superuser
             sudo docker compose exec -T web python manage.py collectstatic --no-input
