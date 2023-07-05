@@ -1,3 +1,5 @@
+from parser.jobs import get_user_jobs, stop_job
+
 from telegram import Update
 from telegram.constants import ParseMode
 from telegram.ext import Application, ContextTypes
@@ -5,7 +7,6 @@ from telegram.ext import Application, ContextTypes
 from bot.constants import text
 from bot.conversations import menu_application
 from bot.keyboards import start_keyboard
-from parser.jobs import get_user_jobs, stop_job
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
