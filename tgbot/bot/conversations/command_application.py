@@ -5,6 +5,7 @@ from telegram.ext import Application, ContextTypes
 from bot.constants import text
 from bot.conversations import menu_application
 from bot.keyboards import start_keyboard
+from parser.jobs import get_user_jobs, stop_job
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -27,6 +28,9 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка команды stop."""
+    user_jobs = await get_user_jobs(update, context)
+    for user_job in user_jobs:
+        await stop_job(update, context, user_job.pk)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text.STOP_MESSAGE)
