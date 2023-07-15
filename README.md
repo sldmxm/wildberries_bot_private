@@ -76,5 +76,34 @@ HTTPS_PROXY='https://USER:PASSWORD@PROXY_IP:PROXY_PORT'
 HTTP_PROXY='http://USER:PASSWORD@PROXY_IP:PROXY_PORT'
 ```
 
+
+### Использование рассылки сообщений
+Для использования рассылки **не** через docker, необходимо установить redis:
+- MacOS
+  ```commandline
+  brew install redis
+  ```
+- Linux
+  ```commandline
+  sudo apt-get install redis
+  ```
+- Windows
+  
+  не поддерживается Windows, необходимо использовать [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) 
+  и запускать как на linux
+
+После запускаем сервер redis:
+```commandline
+sudo redis-server
+```
+Для работы celery в settings.py необходимо добавить
+```python
+CELERY_BROKER_URL = "redis://localhost:6379"
+```
+Затем запускаем celery из папки _tgbot/_
+```commandline
+celery -A tgbot worker
+```
+
 ## Требования к версии Python
 Работает на Python 3.11.0
