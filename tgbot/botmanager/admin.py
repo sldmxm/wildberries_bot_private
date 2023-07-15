@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.auth.models import Group
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -57,6 +57,11 @@ class MailingAdmin(admin.ModelAdmin):
             )
         if '_send_mailing' in request.POST:
             schedule_send_message.delay(object_id=obj.id)
+            messages.add_message(
+                request,
+                messages.INFO,
+                'Рассылка в Telegram началась'
+            )
             return redirect(reverse(
                 'admin:botmanager_mailing_change',
                 kwargs={'object_id': obj.id})
@@ -82,6 +87,17 @@ class MailingAdmin(admin.ModelAdmin):
         """Action для рассылки в Telegram."""
         for messge in queryset:
             schedule_send_message.delay(object_id=messge.id)
+            messages.add_message(
+                request,
+                messages.INFO,
+                'Рассылка в Telegram началась'
+            )
+            return
+        messages.add_message(
+            request,
+            messages.INFO,
+            'Нет данных для рассылки'
+        )
 
     def set_recipients(self, request, object_id):
         """Добавляет пользователей по нажатию кнопки."""
