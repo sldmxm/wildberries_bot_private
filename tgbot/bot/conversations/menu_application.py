@@ -70,7 +70,7 @@ async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
         position=int(match.group(1))))
     response_text = "Invalid request"
     if match:
-        reply_markup = keyboards.go_to_menu()
+        reply_markup = keyboards.send_again_stock_go_menu_keyboard()
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=text.PARSING_WAIT_MESSAGE,
