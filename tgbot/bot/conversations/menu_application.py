@@ -218,7 +218,7 @@ async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
             for size, count in sorted(residual_sizes.items())
         ]
     )
-    reply_markup = keyboards.go_to_menu()
+    reply_markup = keyboards.go_back_stock_keyboard()
     response_text = text.RESIDUE_PARSER_MESSAGE.format(
         residue_in_storehouses=residue_in_storehouses_text,
         residual_sizes=residual_sizes_text
