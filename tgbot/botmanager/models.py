@@ -10,6 +10,7 @@ MAX_LENGTH_ID = 10
 MAX_LENGTH_PHONE_NUMBER = 12
 NAME_VERBOSE = 'Имя пользователя'
 USERNAME_VERBOSE = 'Имя пользователя в Telegram'
+USERNAME_FOR_NULL_TG_USERNAME = 'tg-пользователь не указал username'
 ID_VERBOSE = 'Идентификатор пользователя Telegram'
 CREATED_AT_VERBOSE = 'Дата первого запроса'
 
@@ -20,7 +21,6 @@ class TelegramUser(models.Model):
     username = models.CharField(
         verbose_name=USERNAME_VERBOSE,
         max_length=MAX_LENGTH_USERNAME,
-        unique=True,
     )
     first_name = models.CharField(
         verbose_name=NAME_VERBOSE,
@@ -29,6 +29,7 @@ class TelegramUser(models.Model):
     telegram_id = models.CharField(
         verbose_name=ID_VERBOSE,
         max_length=MAX_LENGTH_ID,
+        unique=True,
     )
 
     created_at = models.DateTimeField(
@@ -44,6 +45,11 @@ class TelegramUser(models.Model):
         return (
             f'Пользователь: {self.username} ID: {self.telegram_id}'
         )
+
+    def save(self, *args, **kwargs):
+        if not self.username:
+            self.username = USERNAME_FOR_NULL_TG_USERNAME
+        super().save(*args, **kwargs)
 
 
 class Mailing(models.Model):
