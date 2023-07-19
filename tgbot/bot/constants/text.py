@@ -91,3 +91,8 @@ LOG_MESSAGE_DOWNLOAD = (
 LOG_MESSAGE_UNSUBSCRIBE = (
     'Пользователь {username}, чат ID {chat_id} отписался от товара {position}'
 )
+LOG_MESSAGE_MAILING_ERROR = (
+    'Ошибка при отправке рассылки пользователю {user_id} ({error})'
+)
+LOG_MESSAGE_START_MAILING = 'Начало рассылки {mailing_id}'
+LOG_MESSAGE_STOP_MAILING = 'Конец рассылки {mailing_id}'
