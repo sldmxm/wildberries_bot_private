@@ -45,6 +45,21 @@ services:
     depends_on:
       - web
 
+  redis:
+    restart: always
+    image: redis
+
+  worker:
+    restart: always
+    build:
+      context: ./
+      dockerfile: ./Dockerfile_celery
+    volumes:
+      - static_value:/app/tgbot/static/
+    depends_on:
+      - redis
+      - web
+
 volumes:
   static_value:
   db_value:

@@ -70,9 +70,11 @@ async def position_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
         position=int(match.group(1))))
     response_text = "Invalid request"
     if match:
+        reply_markup = keyboards.send_again_stock_go_menu_keyboard()
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=text.PARSING_WAIT_MESSAGE
+            text=text.PARSING_WAIT_MESSAGE,
+            reply_markup=reply_markup,
         )
         article = int(match.group(1))
         query = match.group(2)
@@ -216,13 +218,15 @@ async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
             for size, count in sorted(residual_sizes.items())
         ]
     )
+    reply_markup = keyboards.go_to_menu()
     response_text = text.RESIDUE_PARSER_MESSAGE.format(
         residue_in_storehouses=residue_in_storehouses_text,
         residual_sizes=residual_sizes_text
     )
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=response_text
+        text=response_text,
+        reply_markup=reply_markup,
     )
 
 
@@ -309,9 +313,11 @@ async def user_subscriptions(
         response_text = text.SUBSCRIPTIONS_MESSAGE.format(results=results)
     else:
         response_text = text.NO_SUBSCRIPTIONS_MESSAGE
+    reply_markup = keyboards.go_to_menu()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=response_text
+        text=response_text,
+        reply_markup=reply_markup,
     )
 
 
