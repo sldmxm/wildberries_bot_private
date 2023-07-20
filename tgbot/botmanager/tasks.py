@@ -4,8 +4,11 @@ from asgiref.sync import async_to_sync
 from celery import shared_task
 from telegram import Bot
 from telegram.constants import ParseMode
+from telegram.error import TelegramError
 
 from .models import Mailing
+from bot.constants import text
+from bot.core.logging import logger
 from bot.core.settings import settings
 
 
@@ -36,6 +39,7 @@ async def send_document(bot, user_id, document):
 
 @shared_task
 def schedule_send_message(object_id):
+    logger.info(text.LOG_MESSAGE_START_MAILING.format(mailing_id=object_id))
     bot = Bot(token=settings.telegram_token)
     message = Mailing.objects.get(pk=object_id)
     if message.image:
@@ -50,7 +54,15 @@ def schedule_send_message(object_id):
     if message.link:
         message_text += '\n' + message.link
     for recipient in message.recipients.all():
-        send_photo(bot, recipient.telegram_id, byte_file_image)
-        send_messages(bot, recipient.telegram_id, message_text)
-        send_document(bot, recipient.telegram_id, byte_file_doc)
+        try:
+            send_photo(bot, recipient.telegram_id, byte_file_image)
+            send_messages(bot, recipient.telegram_id, message_text)
+            send_document(bot, recipient.telegram_id, byte_file_doc)
+        except TelegramError as error:
+            logger.error(
+                text.LOG_MESSAGE_MAILING_ERROR.format(
+                    user_id=recipient.telegram_id,
+                    error=error.message
+                ))
         sleep(0.2)
+    logger.info(text.LOG_MESSAGE_STOP_MAILING.format(mailing_id=object_id))
