@@ -76,5 +76,17 @@ HTTPS_PROXY='https://USER:PASSWORD@PROXY_IP:PROXY_PORT'
 HTTP_PROXY='http://USER:PASSWORD@PROXY_IP:PROXY_PORT'
 ```
 
+## Тестирование блокировки парсера серверами WB
+Существует ненулевая вероятность блокировки со стороны WB запросов парсера по IP.
+Протестировать серию завпросов:
+```
+cd tgbot
+python manage.py test
+```
+
+По умолчанию тест делает серии 250-500-1000 запросов с паузой между ними в 1 час.
+Параметры теста находятся в ```tgbot/parser/tests/test_position_parser.py``` в константах ```SERIES_REQUESTS``` и ```SERIES_REQUESTS_PAUSE```.
+
+
 ## Требования к версии Python
 Работает на Python 3.11.0
