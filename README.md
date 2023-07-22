@@ -88,8 +88,8 @@ HTTP_PROXY='http://USER:PASSWORD@PROXY_IP:PROXY_PORT'
   sudo apt-get install redis
   ```
 - Windows
-  
-  > не поддерживается Windows, необходимо использовать [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) 
+
+  > не поддерживается Windows, необходимо использовать [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)
   и запускать как на linux
 
 После запускаем сервер redis:
@@ -106,18 +106,18 @@ celery -A tgbot worker
 ```
 
 ## Запуск через Docker (предпочтительный вариант запуска программы)
-> При использовании Docker compose не надо устанавливать и запускать сервера redis 
+> При использовании Docker compose не надо устанавливать и запускать сервера redis
 (не поддерживается Windows, поэтому необходимо использовать [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install))
 и celery.
 
 Перед запуском необходимо создать `.env` файл и заполнить его по примеру `.env.example`:
-```commandline 
+```commandline
 touch .env
 nano .env
 ```
 Для запуска программы через docker compose необходимо ввести команду:
 ```commandline
-docker compose up --build 
+docker compose up --build
 ```
 При первом запуске контейнера необходимо создать, выполнить миграции и собрать статику:
 ```commandline
@@ -139,10 +139,9 @@ docker compose exec -T web python manage.py superuser
 
 ## Тестирование блокировки парсера серверами WB
 Существует ненулевая вероятность блокировки со стороны WB запросов парсера по IP.
-Протестировать серию завпросов:
-```
-cd tgbot
-python manage.py test
+Протестировать серию запросов:
+```commandline
+python tgbot/manage.py test parser
 ```
 
 По умолчанию тест делает серии 250-500-1000 запросов с паузой между ними в 1 час.
