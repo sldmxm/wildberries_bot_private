@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group
 from django.shortcuts import redirect
 from django.urls import reverse
 
-from .models import Mailing, TelegramUser
+from .models import ButtonConstructor, Mailing, TelegramUser
 from .tasks import schedule_send_message
 
 
@@ -104,3 +104,24 @@ class MailingAdmin(admin.ModelAdmin):
         self.action_add_all_users(
             request,
             queryset=Mailing.objects.filter(pk=object_id))
+
+
+@admin.register(ButtonConstructor)
+class ButtonConstructorAdmin(admin.ModelAdmin):
+    """Регистрация модели ButtonConstructor в админке."""
+
+    list_display = (
+        'pk',
+        'button_name',
+        'button_description',
+        'default_text',
+        'users_text',
+    )
+
+    search_fields = ('id', 'users_text',)
+    list_filter = ('button_description',)
+    readonly_fields = ['button_description', 'button_name', 'default_text']
+    ordering = ('pk',)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
