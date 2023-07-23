@@ -58,7 +58,7 @@ class Command(BaseCommand):
         for value in CSV_TABLES['ButtonConstructor']:
             ButtonConstructor.objects.get_or_create(
                 pk=value['id'],
-                button_name=value['button_name'],
+                ui_control_id=value['ui_control_id'],
                 button_description=value['button_description'],
                 default_text=value['default_text'],
             )

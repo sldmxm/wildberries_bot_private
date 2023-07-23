@@ -112,7 +112,7 @@ class ButtonConstructorAdmin(admin.ModelAdmin):
 
     list_display = (
         'pk',
-        'button_name',
+        'ui_control_id',
         'button_description',
         'default_text',
         'users_text',
@@ -120,8 +120,11 @@ class ButtonConstructorAdmin(admin.ModelAdmin):
 
     search_fields = ('id', 'users_text',)
     list_filter = ('button_description',)
-    readonly_fields = ['button_description', 'button_name', 'default_text']
+    readonly_fields = ['button_description', 'ui_control_id', 'default_text']
     ordering = ('pk',)
 
     def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request, obj=None):
         return False

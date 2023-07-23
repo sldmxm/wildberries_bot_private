@@ -15,7 +15,7 @@ USERNAME_FOR_NULL_TG_USERNAME = 'tg-пользователь не указал u
 ID_VERBOSE = 'Идентификатор пользователя Telegram'
 CREATED_AT_VERBOSE = 'Дата первого запроса'
 BUTTON_VERBOSE = 'Описание функционала кнопки'
-BUTTON_NAME ='Название кнопки'
+UI_CONTROL_ID = 'ID редактируемого элемента'
 DEFAULT_TEXT = 'Текст по умолчанию'
 USERS_TEXT = 'Текст пользователя'
 
@@ -106,8 +106,8 @@ class Mailing(models.Model):
 class ButtonConstructor(models.Model):
     """Модель конструктора кнопок."""
 
-    button_name = models.CharField(
-        verbose_name=BUTTON_NAME,
+    ui_control_id = models.CharField(
+        verbose_name=UI_CONTROL_ID,
         max_length=MAX_LENGTH_BUTTON_TEXT,
     )
     button_description = models.CharField(
@@ -125,8 +125,8 @@ class ButtonConstructor(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Кнопку'
+        verbose_name = 'Кнопка'
         verbose_name_plural = 'Кнопки'
 
     def __str__(self):
-        return self.button_name
+        return self.ui_control_id
