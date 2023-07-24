@@ -76,5 +76,77 @@ HTTPS_PROXY='https://USER:PASSWORD@PROXY_IP:PROXY_PORT'
 HTTP_PROXY='http://USER:PASSWORD@PROXY_IP:PROXY_PORT'
 ```
 
+
+### Использование рассылки сообщений
+Для использования рассылки **не** через docker, необходимо установить redis:
+- MacOS
+  ```commandline
+  brew install redis
+  ```
+- Linux
+  ```commandline
+  sudo apt-get install redis
+  ```
+- Windows
+
+  > не поддерживается Windows, необходимо использовать [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)
+  и запускать как на linux
+
+После запускаем сервер redis:
+```commandline
+sudo redis-server
+```
+Для работы celery в settings.py необходимо добавить
+```python
+CELERY_BROKER_URL = "redis://localhost:6379"
+```
+Затем запускаем celery из папки _tgbot/_
+```commandline
+celery -A tgbot worker
+```
+
+## Запуск через Docker (предпочтительный вариант запуска программы)
+> При использовании Docker compose не надо устанавливать и запускать сервера redis
+(не поддерживается Windows, поэтому необходимо использовать [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install))
+и celery.
+
+Перед запуском необходимо создать `.env` файл и заполнить его по примеру `.env.example`:
+```commandline
+touch .env
+nano .env
+```
+Для запуска программы через docker compose необходимо ввести команду:
+```commandline
+docker compose up --build
+```
+При первом запуске контейнера необходимо создать, выполнить миграции и собрать статику:
+```commandline
+docker compose exec -T web python manage.py makemigrations bot
+docker compose exec -T web python manage.py makemigrations botmanager
+docker compose exec -T web python manage.py makemigrations parser
+docker compose exec -T web python manage.py makemigrations users
+docker compose exec -T web python manage.py migrate
+docker compose exec -T web python manage.py collectstatic --no-input
+```
+Создать суперпользователя можно каомандой:
+```commandline
+docker compose exec -T web python manage.py superuser
+```
+> login - admin
+>
+> password - admin
+
+
+## Тестирование блокировки парсера серверами WB
+Существует ненулевая вероятность блокировки со стороны WB запросов парсера по IP.
+Протестировать серию запросов:
+```commandline
+python tgbot/manage.py test parser
+```
+
+По умолчанию тест делает серии 250-500-1000 запросов с паузой между ними в 1 час.
+Параметры теста находятся в ```tgbot/parser/tests/test_position_parser.py``` в константах ```SERIES_REQUESTS``` и ```SERIES_REQUESTS_PAUSE```.
+
+
 ## Требования к версии Python
 Работает на Python 3.11.0

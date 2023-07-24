@@ -6,8 +6,7 @@ STOP_MESSAGE = 'Работа приложения остановлена.'
 CANCEL_MESSAGE = 'Действие отменено'
 HELP_MESSAGE = '''
 Добро пожаловать!
-Узнайте на каких позициях находится ваш товар в поиске Wildberries,
-отправив запрос с указанием артикула и запросом.
+Узнайте на каких позициях находится ваш товар в поиске Wildberries.
 '''
 PARSING_START_MESSAGE = (
     'Для определения позиции артикула отправьте сообщение '
@@ -92,3 +91,8 @@ LOG_MESSAGE_DOWNLOAD = (
 LOG_MESSAGE_UNSUBSCRIBE = (
     'Пользователь {username}, чат ID {chat_id} отписался от товара {position}'
 )
+LOG_MESSAGE_MAILING_ERROR = (
+    'Ошибка при отправке рассылки пользователю {user_id} ({error})'
+)
+LOG_MESSAGE_START_MAILING = 'Начало рассылки {mailing_id}'
+LOG_MESSAGE_STOP_MAILING = 'Конец рассылки {mailing_id}'
