@@ -96,3 +96,4 @@ LOG_MESSAGE_MAILING_ERROR = (
 )
 LOG_MESSAGE_START_MAILING = 'Начало рассылки {mailing_id}'
 LOG_MESSAGE_STOP_MAILING = 'Конец рассылки {mailing_id}'
+LOG_MESSAGE_ERROR_GET_DATA = 'Ошибка {error} при запросе к {link}'
