@@ -4,17 +4,19 @@ from telegram import Update
 from telegram.constants import ParseMode
 from telegram.ext import Application, ContextTypes
 
-from bot.constants import text
 from bot.conversations import menu_application
 from bot.keyboards import start_keyboard
+from bot.utils import get_text_for_buttons_async
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка команды start."""
     reply_markup = start_keyboard()
+    button_text = await get_text_for_buttons_async('start_message')
+
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text.START_MESSAGE,
+        text=button_text,
         parse_mode=ParseMode.HTML,
         reply_markup=reply_markup
     )
@@ -22,19 +24,21 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка команды help."""
+    button_text = await get_text_for_buttons_async('help_message')
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text.HELP_MESSAGE)
+        text=button_text)
 
 
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка команды stop."""
+    button_text = await get_text_for_buttons_async('stop_message')
     user_jobs = await get_user_jobs(update, context)
     for user_job in user_jobs:
         await stop_job(update, context, user_job.pk)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=text.STOP_MESSAGE)
+        text=button_text)
 
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):

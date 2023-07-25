@@ -6,6 +6,10 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from bot.constants import callback
 from bot.models import Callback
 from tgbot import settings
+from bot.utils import get_text_for_buttons
+
+import os
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 
 def start_keyboard():
@@ -21,28 +25,33 @@ def start_keyboard():
 
 
 def menu_keyboard():
+    position_parser_button = get_text_for_buttons('position_parser_button')
+    residue_parser_button = get_text_for_buttons('residue_parser_button')
+    acceptance_rate = get_text_for_buttons('acceptance_rate')
+    user_subscriptions = get_text_for_buttons('user_subscriptions')
+
     keyboard = [
         [
             InlineKeyboardButton(
-                'Парсер позиций',
+                position_parser_button,
                 callback_data=callback.CALLBACK_POSITION_PARSER
             ),
         ],
         [
             InlineKeyboardButton(
-                'Парсер остатков',
+                residue_parser_button,
                 callback_data=callback.CALLBACK_RESIDUE_PARSER
             )
         ],
         [
             InlineKeyboardButton(
-                'Отслеживание коэффициента приемки WB',
+                acceptance_rate,
                 callback_data=callback.CALLBACK_ACCEPTANCE_RATE_HELP
             )
         ],
         [
             InlineKeyboardButton(
-                'Мои подписки на позиции',
+                user_subscriptions,
                 callback_data=callback.CALLBACK_USER_SUBSCRIPTIONS
             )
         ],

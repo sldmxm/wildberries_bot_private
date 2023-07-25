@@ -10,7 +10,7 @@ from telegram.ext import ContextTypes
 from bot.constants.text import MEMBER_STATUSES, NOT_SUBSCRIBED
 from bot.core.settings import settings
 from bot.models import UserAction
-from botmanager.models import TelegramUser
+from botmanager.models import TelegramUser, ButtonConstructor
 
 
 REPORT_DAYS = 3
@@ -129,3 +129,28 @@ def data_export_to_xls(
 
     wb.save(filename)
     return filename
+
+
+@sync_to_async
+def get_text_for_buttons_async(ui_control_id: str) -> str:
+    """
+    Асинхронная функция получает на вход текстовое навзание элемента
+    и возвращает текст для отображения этого элемента из базы.
+    """
+    target_button = ButtonConstructor.objects.get(
+        ui_control_id=ui_control_id)
+    if not target_button.users_text:
+        return target_button.default_text
+    return target_button.users_text
+
+
+def get_text_for_buttons(ui_control_id: str) -> str:
+    """
+    Функция получает на вход текстовое навзание элемента
+    и возвращает текст для отображения этого элемента из базы.
+    """
+    target_button = ButtonConstructor.objects.get(
+        ui_control_id=ui_control_id)
+    if not target_button.users_text:
+        return target_button.default_text
+    return target_button.users_text
