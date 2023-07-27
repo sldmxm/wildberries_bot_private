@@ -26,7 +26,7 @@ class ClientSession:
         await self.session.close()
 
     async def get_data(self, link):
-        """Асинхронное получение данных по ссылки"""
+        """Асинхронное получение данных по ссылке."""
         try:
             async with self.session.get(link, timeout=10) as response:
                 if response.status == HTTPStatus.OK:
