@@ -16,7 +16,7 @@ from bot.utils import (
     data_export_to_xls,
     register_user_action,
     write_user,
-    get_text_for_buttons_async
+    get_text_for_ui_control
 )
 
 
@@ -24,11 +24,12 @@ from bot.utils import (
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка меню"""
 
-    button_text = await get_text_for_buttons_async('confirm_subscribe_message')
+    target_text = get_text_for_ui_control(
+        'confirm_subscribe_message') or text.HELP_MESSAGE
     reply_markup = keyboards.menu_keyboard()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=button_text,
+        text=target_text,
         reply_markup=reply_markup
     )
     await write_user(update)
@@ -54,11 +55,12 @@ async def position_parser_help_message(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """обработка вспомогательного сообщения парсера позиций"""
-    button_text = await get_text_for_buttons_async('position_parser_message')
+    target_text = get_text_for_ui_control(
+        'position_parser_message') or text.PARSING_START_MESSAGE
     reply_markup = keyboards.cancel_keyboard()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=button_text,
+        text=target_text,
         reply_markup=reply_markup
     )
 
@@ -184,11 +186,12 @@ async def residue_parser_help_message(
         context: ContextTypes.DEFAULT_TYPE
 ):
     """Обработка вспомогательного сообщения парсера остатков"""
-    button_text = await get_text_for_buttons_async('residue_parser_message')
+    target_text = get_text_for_ui_control(
+        'residue_parser_message') or text.RESIDUE_PARSER_START_MESSAGE
     reply_markup = keyboards.cancel_keyboard()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=button_text,
+        text=target_text,
         reply_markup=reply_markup
     )
 

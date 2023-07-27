@@ -6,7 +6,8 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from bot.constants import callback
 from bot.models import Callback
 from tgbot import settings
-from bot.utils import get_text_for_buttons
+from bot.utils import get_text_for_ui_control
+from .constants import text
 
 import os
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
@@ -25,10 +26,14 @@ def start_keyboard():
 
 
 def menu_keyboard():
-    position_parser_button = get_text_for_buttons('position_parser_button')
-    residue_parser_button = get_text_for_buttons('residue_parser_button')
-    acceptance_rate = get_text_for_buttons('acceptance_rate')
-    user_subscriptions = get_text_for_buttons('user_subscriptions')
+    position_parser_button = get_text_for_ui_control(
+        'position_parser_button') or text.POSITION_PARSER_UI_DEFAULT
+    residue_parser_button = get_text_for_ui_control(
+        'residue_parser_button') or text.RESIDUE_PARSER_UI_DEFAULT
+    acceptance_rate = get_text_for_ui_control(
+        'acceptance_rate') or text.ACCEPTANCE_RATE_HELP_UI_DEFAULT
+    user_subscriptions = get_text_for_ui_control(
+        'user_subscriptions') or text.USER_SUBSCRIPTIONS_UI_DEFAULT
 
     keyboard = [
         [

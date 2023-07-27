@@ -6,17 +6,19 @@ from telegram.ext import Application, ContextTypes
 
 from bot.conversations import menu_application
 from bot.keyboards import start_keyboard
-from bot.utils import get_text_for_buttons_async
+from bot.utils import get_text_for_ui_control
+from bot.constants import text
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка команды start."""
     reply_markup = start_keyboard()
-    button_text = await get_text_for_buttons_async('start_message')
+    target_text = get_text_for_ui_control(
+        'start_message') or text.START_MESSAGE
 
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=button_text,
+        text=target_text,
         parse_mode=ParseMode.HTML,
         reply_markup=reply_markup
     )
@@ -24,21 +26,23 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка команды help."""
-    button_text = await get_text_for_buttons_async('help_message')
+    target_text = get_text_for_ui_control(
+        'help_message') or text.HELP_MESSAGE
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=button_text)
+        text=target_text)
 
 
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка команды stop."""
-    button_text = await get_text_for_buttons_async('stop_message')
+    target_text = get_text_for_ui_control(
+        'stop_message') or text.STOP_MESSAGE
     user_jobs = await get_user_jobs(update, context)
     for user_job in user_jobs:
         await stop_job(update, context, user_job.pk)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=button_text)
+        text=target_text)
 
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
