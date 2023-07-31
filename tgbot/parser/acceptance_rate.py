@@ -9,7 +9,7 @@ from .clientsession import ClientSession
 
 
 def coef_in_text(coef: int) -> str:
-    """Перевод полученного коэффициента в текст для таблицы"""
+    """Перевод полученного коэффициента в текст для таблицы."""
     if coef == 0:
         return 'Бесплатно'
     if not coef:
@@ -21,14 +21,14 @@ def coef_in_text(coef: int) -> str:
 
 @sync_to_async
 def get_sh_index(storehouse: str) -> int:
-    """Получение индекса склада из базы"""
+    """Получение индекса склада из базы."""
     return Storehouse.objects.get(name=storehouse).index
 
 
 async def get_rates(storehouse: str) -> str:
     """
-    Парсер данных о коэффициентах приемки  склада.
-    Возвращение полученной информации в виде таблицы
+    Парсер данных о коэффициентах приемки склада.
+    Возвращение полученной информации в виде таблицы.
     """
     sh_index = await get_sh_index(storehouse)
     table = PrettyTable()

@@ -14,14 +14,14 @@ from bot.core.settings import settings
 
 @async_to_sync
 async def send_messages(bot, user_id, message):
-    """Конвертер для асинхронной отправки текстового сообщения"""
+    """Конвертер для асинхронной отправки текстового сообщения."""
     async with bot:
         await bot.send_message(user_id, message, parse_mode=ParseMode.HTML)
 
 
 @async_to_sync
 async def send_photo(bot, user_id, photo):
-    """Конвертер для асинхронной отправки фото"""
+    """Конвертер для асинхронной отправки фото."""
     if photo is not None:
         photo.seek(0, 0)
         async with bot:
@@ -30,15 +30,15 @@ async def send_photo(bot, user_id, photo):
 
 @async_to_sync
 async def send_document(bot, user_id, document):
-    """Конвертер для асинхронной отправки файла"""
+    """Конвертер для асинхронной отправки файла."""
     if document is not None:
         document.seek(0, 0)
         async with bot:
             await bot.send_document(user_id, document, write_timeout=10)
 
 
-@shared_task
-def schedule_send_message(object_id):
+@shared_task(bind=True)
+def schedule_send_message(self, object_id):
     logger.info(text.LOG_MESSAGE_START_MAILING.format(mailing_id=object_id))
     bot = Bot(token=settings.telegram_token)
     message = Mailing.objects.get(pk=object_id)
@@ -64,5 +64,8 @@ def schedule_send_message(object_id):
                     user_id=recipient.telegram_id,
                     error=error.message
                 ))
+            if error.message.startswith('Can\'t parse entities'):
+                return False
         sleep(0.2)
     logger.info(text.LOG_MESSAGE_STOP_MAILING.format(mailing_id=object_id))
+    return True

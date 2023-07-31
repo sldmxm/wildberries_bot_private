@@ -73,13 +73,23 @@ def go_to_menu():
     ]
     return InlineKeyboardMarkup(keyboard)
 
-  
+
 def go_back_stock_keyboard():
     keyboard = [
         [
             InlineKeyboardButton(
                 'Вернуться назад',
                 callback_data=callback.CALLBACK_RESIDUE_PARSER
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                'Вернуться в меню',
+                callback_data=callback.CALLBACK_CANCEL
+            )
+        ],
+    ]
+    return InlineKeyboardMarkup(keyboard)
 
 
 def send_again_stock_go_menu_keyboard():
@@ -101,7 +111,7 @@ def send_again_stock_go_menu_keyboard():
 
 
 async def position_parse_keyboard(article: int, query: str):
-    """Создание клавиатуры парсера позиций"""
+    """Создание клавиатуры парсера позиций."""
     callback_update = await Callback.objects.acreate(
         article=article,
         query=query
