@@ -11,7 +11,7 @@ from bot.conversations import command_application, menu_application
 
 
 def register_conversation_handlers(application: Application) -> None:
-    """Добавление обработчиков сообщений"""
+    """Добавление обработчиков сообщений."""
     application.add_handler(CommandHandler('start', command_application.start))
     application.add_handler(CommandHandler('help', command_application.help))
     application.add_handler(CommandHandler('stop', command_application.stop))

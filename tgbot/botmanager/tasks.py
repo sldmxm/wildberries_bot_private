@@ -14,14 +14,14 @@ from bot.core.settings import settings
 
 @async_to_sync
 async def send_messages(bot, user_id, message):
-    """Конвертер для асинхронной отправки текстового сообщения"""
+    """Конвертер для асинхронной отправки текстового сообщения."""
     async with bot:
         await bot.send_message(user_id, message, parse_mode=ParseMode.HTML)
 
 
 @async_to_sync
 async def send_photo(bot, user_id, photo):
-    """Конвертер для асинхронной отправки фото"""
+    """Конвертер для асинхронной отправки фото."""
     if photo is not None:
         photo.seek(0, 0)
         async with bot:
@@ -30,7 +30,7 @@ async def send_photo(bot, user_id, photo):
 
 @async_to_sync
 async def send_document(bot, user_id, document):
-    """Конвертер для асинхронной отправки файла"""
+    """Конвертер для асинхронной отправки файла."""
     if document is not None:
         document.seek(0, 0)
         async with bot:

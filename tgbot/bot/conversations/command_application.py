@@ -63,7 +63,7 @@ async def my_subscriptions(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def setup_my_commands(application: Application):
-    """Меню со списком команд"""
+    """Меню со списком команд."""
     bot_commands = [
         ('start', 'Запуск бота'),
         ('help', 'Получить инструкцию'),
