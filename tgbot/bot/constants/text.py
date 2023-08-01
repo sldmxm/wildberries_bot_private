@@ -96,4 +96,5 @@ LOG_MESSAGE_MAILING_ERROR = (
 )
 LOG_MESSAGE_START_MAILING = 'Начало рассылки {mailing_id}'
 LOG_MESSAGE_STOP_MAILING = 'Конец рассылки {mailing_id}'
-LOG_MESSAGE_ERROR_GET_DATA = 'Ошибка {error} при запросе к {link}'
+LOG_MESSAGE_ERROR_GET_DATA = 'Ошибка {error}'
+LOG_MESSAGE_ERROR_GET_DATA_PATTERN = r"Ошибка\s+(\d+\s*,\s*message='[^']*')"

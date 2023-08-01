@@ -39,7 +39,5 @@ class ClientSession:
         except TimeoutError:
             pass
         except ClientError as e:
-            logger.error(text.LOG_MESSAGE_ERROR_GET_DATA.format(
-                link=link,
-                error=e))
+            logger.error(text.LOG_MESSAGE_ERROR_GET_DATA.format(error=e))
         return await self.get_data(link)
