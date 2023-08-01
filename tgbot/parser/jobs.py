@@ -20,7 +20,7 @@ async def create_job(
         interval: timedelta,
         start_time: datetime = None
 ) -> None:
-    """Создание задачи для подписки на парсинг"""
+    """Создание задачи для подписки на парсинг."""
     if start_time is None:
         timezone = pytz.timezone(settings.TIME_ZONE)
         start_time = datetime.now(timezone)
@@ -59,7 +59,7 @@ async def create_job(
 
 
 async def schedule_parse(context: CallbackContext) -> None:
-    """Регулярный парсинг по подписке"""
+    """Регулярный парсинг по подписке."""
     article = context.job.data.article
     query = context.job.data.query
     results = await get_position(article, query)
@@ -96,7 +96,7 @@ async def schedule_parse(context: CallbackContext) -> None:
 
 
 def start_jobs(application: Application) -> None:
-    """автоматический старт подписок на парснг"""
+    """Автоматический старт подписок на парснг."""
     for db_job in Job.objects.filter(finished=False).all():
         application.job_queue.run_repeating(
             schedule_parse,
@@ -113,7 +113,7 @@ async def stop_job(
         context: ContextTypes.DEFAULT_TYPE,
         job_id: int
 ) -> None:
-    """остановка подписки на парснг"""
+    """Остановка подписки на парсинг."""
     job = context.job_queue.get_jobs_by_name(str(job_id))
     if job:
         job[0].schedule_removal()
@@ -127,7 +127,7 @@ def get_user_jobs(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ) -> list[Job]:
-    """получение подписок на парснг пользователя"""
+    """Получение подписок на парсинг пользователя."""
     return list(Job.objects.filter(
         user_id=update.effective_chat.id,
         finished=False
@@ -138,5 +138,5 @@ def get_user_jobs(
 def get_job_results(
         job_id: int
 ) -> list[ProductPosition]:
-    """Получение результатов работы парсера"""
+    """Получение результатов работы парсера."""
     return list(Job.objects.get(pk=job_id).productposition.all())
