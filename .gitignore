@@ -166,5 +166,3 @@ cython_debug/
 migrations/
 logs/
 static/
-
-settings
