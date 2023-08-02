@@ -12,7 +12,7 @@ from .tasks import schedule_send_message
 
 @admin.register(TelegramUser)
 class TelegramUserAdmin(admin.ModelAdmin):
-    """Регистрация модели TelegramUser в админке"""
+    """Регистрация модели TelegramUser в админке."""
 
     list_display = (
         'id',
@@ -33,7 +33,7 @@ admin.site.unregister(Group)
 
 @admin.register(Mailing)
 class MailingAdmin(admin.ModelAdmin):
-    """Регистрация модели Mailing в админке"""
+    """Регистрация модели Mailing в админке."""
 
     list_display = (
         'id',
@@ -67,7 +67,7 @@ class MailingAdmin(admin.ModelAdmin):
         return super().response_change(request, obj)
 
     def get_form(self, request, obj=None, **kwargs):
-        """Значение поля author по умолчанию"""
+        """Значение поля author по умолчанию."""
         form = super(MailingAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['author'].initial = request.user
         return form

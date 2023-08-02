@@ -4,7 +4,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class User(AbstractUser):
-    """Базовая модель для управления данными пользователей админки"""
+    """Базовая модель для управления данными пользователей админки."""
     USER = 'user'
     ADMIN = 'admin'
     USER_ROLES = (
