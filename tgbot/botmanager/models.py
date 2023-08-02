@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 
-User = get_user_model()
+# User = get_user_model()
 
 MAX_LENGTH_USERNAME = 32
 MAX_LENGTH_FIRST_NAME = 15
@@ -62,7 +62,7 @@ class Mailing(models.Model):
     """Модель сообщения рассылки пользователям ТГ бота."""
 
     author = models.ForeignKey(
-        User,
+        get_user_model(),
         related_name='mailings',
         on_delete=models.CASCADE,
         verbose_name='Автор',)
@@ -125,8 +125,8 @@ class ButtonConstructor(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Кнопка'
-        verbose_name_plural = 'Кнопки'
+        verbose_name = 'функционал'
+        verbose_name_plural = 'Конструктор бота'
 
     def __str__(self):
         return self.ui_control_id
