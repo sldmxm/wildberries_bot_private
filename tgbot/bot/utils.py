@@ -10,7 +10,8 @@ from telegram.ext import ContextTypes
 from bot.constants.text import MEMBER_STATUSES, NOT_SUBSCRIBED
 from bot.core.settings import settings
 from bot.models import UserAction
-from botmanager.models import TelegramUser, ButtonConstructor
+from botmanager.models import TelegramUser
+from ui_constructor.models import ButtonConstructor
 import logging
 
 

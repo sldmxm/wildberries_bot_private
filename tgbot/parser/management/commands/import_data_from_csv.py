@@ -1,5 +1,5 @@
 from csv import DictReader
-from botmanager.models import ButtonConstructor
+from ui_constructor.models import ButtonConstructor
 from parser.models import Destination, Storehouse
 from sys import exit
 

@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'phonenumber_field',
     'botmanager',
+    'ui_constructor',
     'bot',
     'users.apps.UsersConfig',
     'parser',
@@ -91,7 +92,7 @@ DATABASES = {
        'PORT': os.getenv('DB_PORT', default='5432')
    }
 }
-#
+# #
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 

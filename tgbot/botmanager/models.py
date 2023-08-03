@@ -2,23 +2,15 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 
-# User = get_user_model()
-
 MAX_LENGTH_USERNAME = 32
 MAX_LENGTH_FIRST_NAME = 15
 MAX_LENGTH_ID = 10
 MAX_LENGTH_PHONE_NUMBER = 12
-MAX_LENGTH_BUTTON_TEXT = 256
 NAME_VERBOSE = 'Имя пользователя'
 USERNAME_VERBOSE = 'Имя пользователя в Telegram'
 USERNAME_FOR_NULL_TG_USERNAME = 'tg-пользователь не указал username'
 ID_VERBOSE = 'Идентификатор пользователя Telegram'
 CREATED_AT_VERBOSE = 'Дата первого запроса'
-BUTTON_VERBOSE = 'Описание функционала кнопки'
-UI_CONTROL_ID = 'ID редактируемого элемента'
-DEFAULT_TEXT = 'Текст по умолчанию'
-USERS_TEXT = 'Текст пользователя'
-
 
 
 class TelegramUser(models.Model):
@@ -101,32 +93,3 @@ class Mailing(models.Model):
 
     def __str__(self):
         return f'{self.pub_date}: ({self.author}) - {self.content[:15]}'
-
-
-class ButtonConstructor(models.Model):
-    """Модель конструктора кнопок."""
-
-    ui_control_id = models.CharField(
-        verbose_name=UI_CONTROL_ID,
-        max_length=MAX_LENGTH_BUTTON_TEXT,
-    )
-    button_description = models.CharField(
-        verbose_name=BUTTON_VERBOSE,
-        max_length=MAX_LENGTH_BUTTON_TEXT,
-    )
-    default_text = models.CharField(
-        verbose_name=DEFAULT_TEXT,
-        max_length=MAX_LENGTH_BUTTON_TEXT,
-    )
-    users_text = models.CharField(
-        verbose_name=USERS_TEXT,
-        max_length=MAX_LENGTH_BUTTON_TEXT,
-        blank=True,
-    )
-
-    class Meta:
-        verbose_name = 'функционал'
-        verbose_name_plural = 'Конструктор бота'
-
-    def __str__(self):
-        return self.ui_control_id
