@@ -14,8 +14,8 @@ loop = asyncio.get_event_loop()
 
 async def get_advert_position(article: int, query: str) -> int:
     """
-    Проверка, является ли товар реклманым,
-    если реклмнаый - возврщает его пзицию, иначе -1.
+    Проверка, является ли товар рекламным.
+    Если рекламный - возвращает его позицию, иначе -1.
     """
     link = constants.ADVERT_PRODUCTS_LINK.format(query=query)
     async with ClientSession() as session:
