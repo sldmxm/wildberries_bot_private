@@ -2,7 +2,7 @@ name: wildberries_bot_team_1 workflow
 
 on:
   push:
-    branches: [master] # !!!!!!!!!!! Вернуть release
+    branches: [release]
 
 jobs:
   deploy:
