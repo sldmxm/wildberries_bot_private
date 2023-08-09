@@ -27,6 +27,7 @@ jobs:
           username: ${{ secrets.USER }}
           passphrase: ${{ secrets.PASSPHRASE }} # УБРАТЬ
           password: ${{ secrets.PASSWORD }} # УБРАТЬ
+          #
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
           script: |
