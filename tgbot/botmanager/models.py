@@ -2,8 +2,6 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 
-User = get_user_model()
-
 MAX_LENGTH_USERNAME = 32
 MAX_LENGTH_FIRST_NAME = 15
 MAX_LENGTH_ID = 10
@@ -56,7 +54,7 @@ class Mailing(models.Model):
     """Модель сообщения рассылки пользователям ТГ бота."""
 
     author = models.ForeignKey(
-        User,
+        get_user_model(),
         related_name='mailings',
         on_delete=models.CASCADE,
         verbose_name='Автор',)

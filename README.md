@@ -4,15 +4,19 @@
 
 Телеграм-бот для определения позиций карточек товаров по ключевым словам на платформе Wildberries. Можно вводить ключевые слова и товары, проверять позиции товаров. Предусмотрена возможность настройки периодической проверки позиций товаров (ежедневно, еженедельно, ежемесячно), а так же экспорта данных в разных форматах.
 
-## Использованные технологии
-- django==4.2.2
-- python-telegram-bot==20.3
 
-## Инструкции по запуску
+### Используемые технологии
+- :snake: Python 3.11.0
+- :incoming_envelope: python-telegram-bot 20.3
+- :package: Django 4.2.2
+
+
+
+### Как запустить проект на локальной машине:
 Клонировать репозиторий и перейти в него в командной строке:
 
 ```
-git clone
+git clone git@github.com:Studio-Yandex-Practicum/wildberries_bot_team_1.git
 ```
 
 ```
@@ -47,6 +51,26 @@ python3 -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+Перед запуском проекта необходимо создать телеграм канал и чат бот. Добавьте бота в ваш телеграм канал в качестве админа. После чего заполните .env файл по образцу:
+
+```
+SECRET_KEY="5sr_o164-b_h3^$bg4pl8pfk7xbd3#=(oul8s@u&4m4bbn*7y%"
+CSRF_TRUSTED="127.0.0.1"
+TELEGRAM_TOKEN= "5608055777:AAG58ek3skKH45dn34oQOWUPIBVxjWP3Xqз"  # получите токен для бота в @BotFather
+CHANNEL_USERNAME="@your_test_channel"  # ссылка на ваш телеграм канал
+```
+
+Убедитесь, что в файле tgbot/tgbot/settings.py установлены настройки базы данных:
+
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+```
+
 Перейти в папку, где находится manage.py
 ```
 cd tgbot/
@@ -56,6 +80,8 @@ cd tgbot/
 ```
 python manage.py makemigrations
 python manage.py migrate
+# В случае возникновения ошибок используйте команду
+python manage.py migrate --run-syncdb
 ```
 
 Добавить данные в базу данных данные по умолчанию
@@ -67,8 +93,19 @@ python manage.py import_data_from_csv
 ```
 python manage.py runserver
 ```
+
+Откройте новый терминал и запустите бота:
+```
+python manage.py bot
+```
+После запуска сервиса перейдите в ваш телеграм бот. Функционал будет доступен после нажатия на кнопку "Меню" в левом нижнем углу интерфейса.
+
 Админку бота можно посмотреть на странице http://127.0.0.1:8000/admin/
-Для тестирования самого бота необходимо создать собственный .env-файл по шаблону .env.example
+Для этого перейдите в терминал и создайте пользователя администратора:
+
+```
+python manage.py createsuperuser
+```
 
 Для использования прокси нужно добавить информацию в .env файл в таком формате:
 ```dotenv
@@ -110,6 +147,22 @@ celery -A tgbot worker
 (не поддерживается Windows, поэтому необходимо использовать [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install))
 и celery.
 
+Убедитесь, что в файле tgbot/tgbot/settings.py установлены настройки базы данных:
+
+```
+DATABASES = {
+   'default': {
+       'ENGINE': os.getenv('DB_ENGINE',
+                           default='django.db.backends.postgresql_psycopg2'),
+       'NAME': os.getenv('DB_NAME', default='postgres'),
+       'USER': os.getenv('POSTGRES_USER', default='postgres'),
+       'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
+       'HOST': os.getenv('DB_HOST', default='127.0.0.1'),
+       'PORT': os.getenv('DB_PORT', default='5432')
+   }
+}
+```
+
 Перед запуском необходимо создать `.env` файл и заполнить его по примеру `.env.example`:
 ```commandline
 touch .env
@@ -128,7 +181,7 @@ docker compose exec -T web python manage.py makemigrations users
 docker compose exec -T web python manage.py migrate
 docker compose exec -T web python manage.py collectstatic --no-input
 ```
-Создать суперпользователя можно каомандой:
+Создать суперпользователя можно командой:
 ```commandline
 docker compose exec -T web python manage.py superuser
 ```
