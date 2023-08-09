@@ -147,6 +147,22 @@ celery -A tgbot worker
 (не поддерживается Windows, поэтому необходимо использовать [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install))
 и celery.
 
+Убедитесь, что в файле tgbot/tgbot/settings.py установлены настройки базы данных:
+
+```
+DATABASES = {
+   'default': {
+       'ENGINE': os.getenv('DB_ENGINE',
+                           default='django.db.backends.postgresql_psycopg2'),
+       'NAME': os.getenv('DB_NAME', default='postgres'),
+       'USER': os.getenv('POSTGRES_USER', default='postgres'),
+       'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
+       'HOST': os.getenv('DB_HOST', default='127.0.0.1'),
+       'PORT': os.getenv('DB_PORT', default='5432')
+   }
+}
+```
+
 Перед запуском необходимо создать `.env` файл и заполнить его по примеру `.env.example`:
 ```commandline
 touch .env
