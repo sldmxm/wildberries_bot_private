@@ -15,7 +15,8 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
-#          port: ${{ secrets.PORT }}
+          passphrase: ${{ secrets.PASSPHRASE }} # УБРАТЬ
+#          port: ${{ secrets.PORT }} # ВЕРНУТЬ
           source: "tgbot/,data/,Dockerfile_bot,Dockerfile_web,Dockerfile_celery,docker-compose.yaml,requirements.txt"
           target: /home/${{ secrets.USER }}/app
 
