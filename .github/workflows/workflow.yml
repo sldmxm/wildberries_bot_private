@@ -14,7 +14,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          passphrase: ${{ secrets.PASSPHRASE }} # УБРАТЬ
+          passphrase: ${{ secrets.PASSPHRASE }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
           source: "tgbot/,data/,Dockerfile_bot,Dockerfile_web,Dockerfile_celery,docker-compose.yaml,requirements.txt"
@@ -25,8 +25,8 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          passphrase: ${{ secrets.PASSPHRASE }} # УБРАТЬ
-          password: ${{ secrets.PASSWORD }} # УБРАТЬ
+          passphrase: ${{ secrets.PASSPHRASE }}
+#          password: ${{ secrets.PASSWORD }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
           script: |
@@ -67,6 +67,7 @@ jobs:
             sudo docker compose exec -T web python manage.py makemigrations botmanager
             sudo docker compose exec -T web python manage.py makemigrations parser
             sudo docker compose exec -T web python manage.py makemigrations users
+            sudo docker compose exec -T web python manage.py makemigrations ui_constructor
             sudo docker compose exec -T web python manage.py migrate
             sudo docker compose exec -T web python manage.py superuser
             sudo docker compose exec -T web python manage.py collectstatic --no-input
