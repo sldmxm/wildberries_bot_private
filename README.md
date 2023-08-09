@@ -201,4 +201,5 @@ python tgbot/manage.py test parser
 Параметры теста находятся в ```tgbot/parser/tests/test_position_parser.py``` в константах ```SERIES_REQUESTS``` и ```SERIES_REQUESTS_PAUSE```.
 
 
-
+## Требования к версии Python
+Работает на Python 3.11.0

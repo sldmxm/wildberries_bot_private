@@ -1,3 +1,6 @@
+from time import sleep
+
+import celery
 from django.contrib import admin, messages
 from django.contrib.auth.models import Group
 from django.shortcuts import redirect
@@ -9,7 +12,7 @@ from .tasks import schedule_send_message
 
 @admin.register(TelegramUser)
 class TelegramUserAdmin(admin.ModelAdmin):
-    """Регистрация модели TelegramUser в админке"""
+    """Регистрация модели TelegramUser в админке."""
 
     list_display = (
         'id',
@@ -30,7 +33,7 @@ admin.site.unregister(Group)
 
 @admin.register(Mailing)
 class MailingAdmin(admin.ModelAdmin):
-    """Регистрация модели Mailing в админке"""
+    """Регистрация модели Mailing в админке."""
 
     list_display = (
         'id',
@@ -56,12 +59,7 @@ class MailingAdmin(admin.ModelAdmin):
                 kwargs={'object_id': obj.id})
             )
         if '_send_mailing' in request.POST:
-            schedule_send_message.delay(object_id=obj.id)
-            messages.add_message(
-                request,
-                messages.INFO,
-                'Рассылка в Telegram началась'
-            )
+            self.schedule_send(obj.id, request)
             return redirect(reverse(
                 'admin:botmanager_mailing_change',
                 kwargs={'object_id': obj.id})
@@ -69,7 +67,7 @@ class MailingAdmin(admin.ModelAdmin):
         return super().response_change(request, obj)
 
     def get_form(self, request, obj=None, **kwargs):
-        """Значение поля author по умолчанию"""
+        """Значение поля author по умолчанию."""
         form = super(MailingAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['author'].initial = request.user
         return form
@@ -86,16 +84,11 @@ class MailingAdmin(admin.ModelAdmin):
     def action_send_message(self, request, queryset):
         """Action для рассылки в Telegram."""
         for messge in queryset:
-            schedule_send_message.delay(object_id=messge.id)
-            messages.add_message(
-                request,
-                messages.INFO,
-                'Рассылка в Telegram началась'
-            )
+            self.schedule_send(messge.id, request)
             return
         messages.add_message(
             request,
-            messages.INFO,
+            messages.WARNING,
             'Нет данных для рассылки'
         )
 
@@ -104,3 +97,20 @@ class MailingAdmin(admin.ModelAdmin):
         self.action_add_all_users(
             request,
             queryset=Mailing.objects.filter(pk=object_id))
+
+    def schedule_send(self, object_id, request):
+        task = schedule_send_message.delay(object_id=object_id)
+        sleep(2)
+        result = celery.result.AsyncResult(task.id)
+        if not result.result:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                'Ошибка в содержании сообщения'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Рассылка в Telegram началась'
+            )

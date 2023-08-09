@@ -4,6 +4,9 @@ import aiohttp
 from aiohttp.client_exceptions import ClientError
 from fake_useragent import UserAgent
 
+from bot.constants import text
+from bot.core.logging import logger
+
 
 class ClientSession:
     def __init__(self, headers=None):
@@ -26,13 +29,15 @@ class ClientSession:
         await self.session.close()
 
     async def get_data(self, link):
-        """Асинхронное получение данных по ссылки"""
+        """Асинхронное получение данных по ссылке."""
         try:
             async with self.session.get(link, timeout=10) as response:
                 if response.status == HTTPStatus.OK:
                     return await response.content.read()
+                else:
+                    response.raise_for_status()
         except TimeoutError:
             pass
-        except ClientError:
-            pass
+        except ClientError as e:
+            logger.error(text.LOG_MESSAGE_ERROR_GET_DATA.format(error=e))
         return await self.get_data(link)

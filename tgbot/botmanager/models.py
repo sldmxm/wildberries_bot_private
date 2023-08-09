@@ -14,7 +14,7 @@ CREATED_AT_VERBOSE = 'Дата первого запроса'
 
 
 class TelegramUser(models.Model):
-    """Базовая модель для управления данными пользователей ТГ бота"""
+    """Базовая модель для управления данными пользователей ТГ бота."""
 
     username = models.CharField(
         verbose_name=USERNAME_VERBOSE,

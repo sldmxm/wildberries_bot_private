@@ -13,8 +13,10 @@ loop = asyncio.get_event_loop()
 
 
 async def get_advert_position(article: int, query: str) -> int:
-    """Проверка, является ли товар реклманым,
-    если реклмнаый - возврщает его пзицию, иначе -1"""
+    """
+    Проверка, является ли товар рекламным.
+    Если рекламный - возвращает его позицию, иначе -1.
+    """
     link = constants.ADVERT_PRODUCTS_LINK.format(query=query)
     async with ClientSession() as session:
         response_data = await session.get_data(link)
@@ -34,7 +36,7 @@ async def get_advert_position(article: int, query: str) -> int:
 
 
 async def get_total_positions(query: str, destination: int) -> int:
-    """получение общего количества товаров по запросу"""
+    """Получение общего количества товаров по запросу."""
     link = constants.TOTAL_PRODUCTS_LINK.format(
         query=query,
         destination=destination
@@ -54,7 +56,7 @@ async def parse_page(
         tasks: list[asyncio.Task],
         result: dict
 ) -> None:
-    """парсинг страниц с товаром"""
+    """Парсинг страниц с товаром."""
     link = constants.PAGE_PARSING_LINK.format(
         destination=destination,
         page=str(page),
@@ -80,7 +82,7 @@ async def async_execute(
         article: int,
         destinations: list[int]
 ) -> dict:
-    """Получение словаря с позицией товара в пункте выдачи заказа"""
+    """Получение словаря с позицией товара в пункте выдачи заказа."""
     advert_position = await get_advert_position(article, query)
     if advert_position != -1:
         result = {
@@ -114,7 +116,7 @@ async def async_execute(
 
 
 async def get_result_text(results: dict) -> str:
-    """создание текстового сообщения с положением товаров"""
+    """Создание текстового сообщения с положением товаров."""
     is_advert = list(results.values())[0].get('is_advert', False)
     if is_advert:
         result_text = text.ADVERT_PRODUCT_POSITION_MESSAGE
@@ -154,7 +156,7 @@ async def get_result_text(results: dict) -> str:
 
 
 async def get_position(product_id: int, query: str) -> dict:
-    """Получение словаря с позицией товара по всем пунктам выдачи заказа"""
+    """Получение словаря с позицией товара по всем пунктам выдачи заказа."""
     query = '%20'.join(query.split(' '))
     destinations = []
     async for destination in Destination.objects.all():
