@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'phonenumber_field',
     'botmanager',
+    'ui_constructor',
     'bot',
     'users.apps.UsersConfig',
     'parser',
@@ -81,17 +82,17 @@ WSGI_APPLICATION = 'tgbot.wsgi.application'
 # }
 
 DATABASES = {
-    'default': {
-        'ENGINE': os.getenv('DB_ENGINE',
-                            default='django.db.backends.postgresql_psycopg2'),
-        'NAME': os.getenv('DB_NAME', default='postgres'),
-        'USER': os.getenv('POSTGRES_USER', default='postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
-        'HOST': os.getenv('DB_HOST', default='127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', default='5432')
-    }
+   'default': {
+       'ENGINE': os.getenv('DB_ENGINE',
+                           default='django.db.backends.postgresql_psycopg2'),
+       'NAME': os.getenv('DB_NAME', default='postgres'),
+       'USER': os.getenv('POSTGRES_USER', default='postgres'),
+       'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
+       'HOST': os.getenv('DB_HOST', default='127.0.0.1'),
+       'PORT': os.getenv('DB_PORT', default='5432')
+   }
 }
-
+# #
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 

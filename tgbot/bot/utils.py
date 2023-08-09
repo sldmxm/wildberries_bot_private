@@ -11,6 +11,8 @@ from bot.constants.text import MEMBER_STATUSES, NOT_SUBSCRIBED
 from bot.core.settings import settings
 from bot.models import UserAction
 from botmanager.models import TelegramUser
+from ui_constructor.models import ButtonConstructor
+import logging
 
 
 REPORT_DAYS = 3
@@ -130,3 +132,19 @@ def data_export_to_xls(
 
     wb.save(filename)
     return filename
+
+
+def get_text_for_ui_control(ui_control_id: str) -> str:
+    """
+    Функция получает на вход текстовое навзание элемента
+    и возвращает текст для отображения этого элемента из базы.
+    Если возникает ошибка - возвращает None.
+    """
+    try:
+        target_button = ButtonConstructor.objects.get(
+            ui_control_id=ui_control_id)
+        return target_button.users_text
+    except Exception as e:
+        logging.error(
+            msg=f"Exception while getting a text for ui from db: {e}.")
+        return None
