@@ -113,7 +113,7 @@ async def update_position_parser(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
-    """Обработка обновления позиции парсера"""
+    """Обработка обновления позиции парсера."""
     match = re.match(
         callback.CALLBACK_UPDATE_PATTERN,
         update.callback_query.data
@@ -155,7 +155,7 @@ async def callback_subscribe_position_parser(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
-    """Обработка подписки на позицию парсера"""
+    """Обработка подписки на позицию парсера."""
     match = re.match(
         callback.CALLBACK_SCHEDULE_PARSER_PATTERN,
         update.callback_query.data
@@ -198,7 +198,7 @@ async def residue_parser_help_message(
 
 @check_user_subscription
 async def residue_parser(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка парсера остатков"""
+    """Обработка парсера остатков."""
     match = re.match(text.RESIDUE_PARSER_PATTERN, update.message.text)
     article = int(match.group(1))
     logger.info(text.LOG_MESSAGE_RESIDUE_REQUEST.format(
@@ -243,7 +243,7 @@ async def storehouses_page_1(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
-    """Первая страница с выбором складов"""
+    """Первая страница с выбором складов."""
     reply_markup = keyboards.storehouses_keyboard_1()
     if (
         update.callback_query is None or
@@ -269,7 +269,7 @@ async def storehouses_page_2(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
-    """Вторая страница с выбором складов"""
+    """Вторая страница с выбором складов."""
     reply_markup = keyboards.storehouses_keyboard_2()
     await update.effective_message.edit_reply_markup(reply_markup=reply_markup)
     await context.bot.answer_callback_query(
@@ -283,7 +283,7 @@ async def storehouses_page_3(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
-    """Третья страница с выбором складов"""
+    """Третья страница с выбором складов."""
     reply_markup = keyboards.storehouses_keyboard_3()
     await update.effective_message.edit_reply_markup(reply_markup=reply_markup)
     await context.bot.answer_callback_query(
@@ -297,7 +297,7 @@ async def acceptance_rate(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
-    """Обработка коэффициента приемки"""
+    """Обработка коэффициента приемки."""
     reply_markup = keyboards.return_to_storehouse_page_1_keyboard()
     storehouse = update.callback_query.data.split(':')[1]
     table = await get_rates(storehouse)
@@ -314,7 +314,7 @@ async def user_subscriptions(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
-    """Обработка подписок на позиции"""
+    """Обработка подписок на позиции."""
     jobs = await get_user_jobs(update, context)
     if jobs:
         results = '\n'.join([f'{job.article} {job.query}' for job in jobs])
@@ -331,7 +331,7 @@ async def user_subscriptions(
 
 @check_user_subscription
 async def export_results(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка выгруски результатов"""
+    """Обработка выгрузки результатов."""
     match = re.match(
         callback.CALLBACK_EXPORT_RESULTS_PATTERN, update.callback_query.data
     )
@@ -351,7 +351,7 @@ async def unsubscribe(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
-    """Обработка отписки на позицию"""
+    """Обработка отписки от позиции."""
     match = re.match(
         callback.CALLBACK_UNSUBSCRIBE_PATTERN,
         update.callback_query.data

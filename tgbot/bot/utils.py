@@ -19,7 +19,7 @@ REPORT_DAYS = 3
 
 
 def check_user_subscription(func):
-    """Декоратор проверки подписки на пользователя"""
+    """Декоратор проверки подписки на пользователя."""
     @wraps(func)
     async def wrapper(*args, **kwargs):
         if await check_subscription(*args):
@@ -36,7 +36,7 @@ def check_user_subscription(func):
 
 
 def register_user_action(action):
-    """Декоратор для записи действия пользователя в базу данных"""
+    """Декоратор для записи действия пользователя в базу данных."""
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
@@ -93,7 +93,8 @@ async def check_subscription(
 def data_export_to_xls(
     job_id: int
 ) -> str:
-    """Функция сохраняет данные последнего отчета по подписке парсера выбранной
+    """
+    Функция сохраняет данные последнего отчета по подписке парсера выбранной
     позиций в Excel файл и возвращает его имя.
     """
     wb = Workbook()
