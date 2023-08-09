@@ -185,7 +185,7 @@ async def residue_parser_help_message(
         update: Update,
         context: ContextTypes.DEFAULT_TYPE
 ):
-    """Обработка вспомогательного сообщения парсера остатков"""
+    """Обработка вспомогательного сообщения парсера остатков."""
     target_text = get_text_for_ui_control(
         'residue_parser_message') or text.RESIDUE_PARSER_START_MESSAGE
     reply_markup = keyboards.cancel_keyboard()
