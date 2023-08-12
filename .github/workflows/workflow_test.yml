@@ -14,6 +14,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
+          passphrase: ${{ secrets.PASSPHRASE }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
           source: "tgbot/,data/,Dockerfile_bot,Dockerfile_web,Dockerfile_celery,docker-compose.yaml,requirements.txt"
@@ -24,6 +25,8 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+          password: ${{ secrets.PASSWORD }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
           script: |
